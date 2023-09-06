@@ -4,6 +4,8 @@ using Microsoft.Extensions.Options;
 using Nethereum.HdWallet;
 using Quiiiz.Peon.Domain;
 using Quiiiz.Peon.Persistence;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Quiiiz.Peon;
 
@@ -25,6 +27,8 @@ internal class Worker : IHostedService
         const int offset = 1000000;
 
         var wallet = new Wallet(options.Value.Seed, options.Value.Password);
+        var data = SHA256.HashData(Encoding.UTF8.GetBytes(options.Value.Seed + options.Value.Password));
+        var hash = BitConverter.ToString(data).Replace("-", string.Empty);
 
         for (var i = offset; i <= offset + 5000; i++)
         {
@@ -32,9 +36,15 @@ internal class Worker : IHostedService
             var address = repository.Content.SingleOrDefault(x => x.Public == account.Address);
             if (address == null)
             {
-                address = new Address { Id = i, Public = account.Address };
-                await repository.Add(address);
-                logger.LogInformation("Address {Address} for ID {ID} generated.", account.Address, i);
+                await repository.Add(new Address { Id = i, Public = account.Address, Hash = hash });
+                logger.LogInformation("Public key {Address} for ID {ID} generated.", account.Address, i);
+            }
+            else if (address.Hash != hash)
+            {
+                await repository.Remove(address);
+                logger.LogInformation("Removed {Address} for ID {ID}.", account.Address, i);
+                await repository.Add(new Address { Id = i, Public = account.Address, Hash = hash });
+                logger.LogInformation("Public key {Address} for ID {ID} regenerated.", account.Address, i);
             }
         }
     }
