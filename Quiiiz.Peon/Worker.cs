@@ -31,11 +31,11 @@ internal class Worker : IHostedService
         var data = SHA256.HashData(Encoding.UTF8.GetBytes(options.Value.Seed + options.Value.Password));
         var hash = BitConverter.ToString(data).Replace("-", string.Empty);
 
-        for (var i = offset; i <= offset + 5000; i++)
+        for (var i = offset; i <= offset + 50; i++)
         {
             var account = wallet.GetAccount(i);
 
-            var address = repository.Content.SingleOrDefault(x => x.Public == account.Address);
+            var address = repository.Content.SingleOrDefault(x => x.Id == i);
 
             if (address == null)
             {
