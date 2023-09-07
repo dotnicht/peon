@@ -39,7 +39,7 @@ internal class Worker : IHostedService
             }
             else if (existing.Public != account.Address)
             {
-                logger.LogWarning("Wallet credentials have changed. Address {Address} for ID {ID} is no longer valid.", existing.Public, existing.Id);
+                logger.LogWarning("Wallet credentials changed. Address {Address} for ID {ID} is no longer valid.", existing.Public, existing.Id);
             }
         }
     }
