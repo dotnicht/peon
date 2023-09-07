@@ -7,7 +7,7 @@ using Quiiiz.Peon.Persistence;
 
 var builder = Host.CreateApplicationBuilder();
 builder.Services.AddHostedService<Worker>();
-builder.Services.AddTransient<IRepository<Address>, MongoRepository<Address>>();
+builder.Services.AddTransient<IRepository<Account>, MongoRepository<Account>>();
 builder.Services.Configure<Wallet>(builder.Configuration.GetSection(nameof(Wallet)));
 builder.Services.Configure<Database>(builder.Configuration.GetSection(nameof(Database)));
 
