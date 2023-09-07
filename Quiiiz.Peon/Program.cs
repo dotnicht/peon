@@ -7,7 +7,7 @@ using Quiiiz.Peon.Works;
 
 var builder = Host.CreateApplicationBuilder();
 
-builder.Services.Configure<Credentials>(builder.Configuration.GetSection(nameof(Credentials)));
+builder.Services.Configure<Blockchain>(builder.Configuration.GetSection(nameof(Blockchain)));
 builder.Services.Configure<Database>(builder.Configuration.GetSection(nameof(Database)));
 
 builder.Services.AddTransient<IRepository<User>, MongoRepository<User>>();

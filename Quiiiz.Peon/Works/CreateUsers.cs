@@ -12,9 +12,9 @@ namespace Quiiiz.Peon.Works
     {
         private readonly ILogger logger;
         private readonly IRepository<User> repository;
-        private readonly IOptions<Credentials> options;
+        private readonly IOptions<Blockchain> options;
 
-        public CreateUsers(ILogger<CreateUsers> logger, IRepository<User> repository, IOptions<Credentials> options)
+        public CreateUsers(ILogger<CreateUsers> logger, IRepository<User> repository, IOptions<Blockchain> options)
         {
             this.logger = logger;
             this.repository = repository;
