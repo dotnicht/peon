@@ -35,11 +35,11 @@ namespace Quiiiz.Peon.Works
                 if (existing == null)
                 {
                     await repository.Add(new User { Id = i, Address = account.Address, Balance = 0 });
-                    logger.LogInformation("Public key {Address} for ID {ID} generated.", account.Address, i);
+                    logger.LogInformation("Address {Address} for user {UserId} generated.", account.Address, i);
                 }
                 else if (existing.Address != account.Address)
                 {
-                    logger.LogWarning("Wallet credentials changed. Address {Address} for ID {ID} is no longer valid.", existing.Address, existing.Id);
+                    logger.LogWarning("Wallet credentials changed. Address {Address} for user {UserId} is no longer valid.", existing.Address, existing.Id);
                 }
             }
         }
