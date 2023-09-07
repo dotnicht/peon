@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RecurrentTasks;
 
 namespace Quiiiz.Peon.Works
 {
-    internal class SendCurrency
+    internal class SendCurrency : IRunnable
     {
+        public Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
