@@ -16,7 +16,7 @@ namespace Quiiiz.Peon.Works
         private readonly IRepository<User> repository;
         private readonly IOptions<Blockchain> options;
 
-        public SendCurrency(ILogger logger, IRepository<User> repository, IOptions<Blockchain> options)
+        public SendCurrency(ILogger<SendCurrency> logger, IRepository<User> repository, IOptions<Blockchain> options)
         {
             this.logger = logger;
             this.repository = repository;
@@ -25,19 +25,38 @@ namespace Quiiiz.Peon.Works
 
         public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
         {
-            var web3 = new Web3(new Wallet(options.Value.Seed, options.Value.Password).GetAccount(default, options.Value.ChainId), options.Value.Node.ToString());
+            var account = new Wallet(options.Value.Seed, options.Value.Password).GetAccount(default, options.Value.ChainId);
+            var web3 = new Web3(account, options.Value.Node.ToString());
+
+            var balance = await web3.Eth.GetBalance.SendRequestAsync(account.Address);
+
+            if (balance.Value.IsZero) throw new InvalidOperationException("Empty root account balance.");
+
             var price = await web3.Eth.GasPrice.SendRequestAsync();
             var converted = (decimal)Web3.Convert.FromWeiToBigDecimal(price.Value, UnitConversion.EthUnit.Gwei);
 
-            foreach (var user in repository.Content) 
+            foreach (var user in repository.Content)
             {
                 if (user.Balance == default)
                 {
-                    logger.LogInformation("User {UserId} with empty balance at address {Address} detected.", user.Id, user.Address);
+                    balance = await web3.Eth.GetBalance.SendRequestAsync(user.Address);
 
-                    var tx = await web3.Eth.GetEtherTransferService().TransferEtherAndWaitForReceiptAsync(user.Address, 1, converted, 100, cancellationToken: cancellationToken);
+                    var updated = user with { Balance = balance.Value };
 
-                    logger.LogInformation("Sending transaction {Hash}.", tx.TransactionHash);
+                    if (balance == default)
+                    {
+                        logger.LogInformation("User {UserId} with empty balance at address {Address} detected.", user.Id, user.Address);
+
+                        var tx = await web3.Eth.GetEtherTransferService().TransferEtherAndWaitForReceiptAsync(user.Address, 1, converted, 1000000, null, cancellationToken);
+
+                        logger.LogInformation("Sending transaction {Hash}.", tx.TransactionHash);
+
+                        balance = await web3.Eth.GetBalance.SendRequestAsync(user.Address);
+
+                        updated = user with { Balance = balance.Value };
+                    }
+
+                    await repository.Update(updated);
                 }
             }
         }
