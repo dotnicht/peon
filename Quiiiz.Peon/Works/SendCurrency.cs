@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nethereum.HdWallet;
-using Nethereum.Util;
 using Nethereum.Web3;
 using Quiiiz.Peon.Configuration;
 using Quiiiz.Peon.Domain;
@@ -28,14 +27,13 @@ namespace Quiiiz.Peon.Works
             var account = new Wallet(options.Value.Seed, options.Value.Password).GetAccount(default, options.Value.ChainId);
             var web3 = new Web3(account, options.Value.Node.ToString());
 
+            web3.Eth.TransactionManager.UseLegacyAsDefault = true;
+
             var balance = await web3.Eth.GetBalance.SendRequestAsync(account.Address);
 
             if (balance.Value.IsZero) throw new InvalidOperationException("Empty root account balance.");
 
-            var price = await web3.Eth.GasPrice.SendRequestAsync();
-            var converted = (decimal)Web3.Convert.FromWeiToBigDecimal(price.Value, UnitConversion.EthUnit.Gwei);
-
-            foreach (var user in repository.Content)
+            foreach (var user in repository.Content.Take(3))
             {
                 if (user.Balance == default)
                 {
@@ -43,11 +41,11 @@ namespace Quiiiz.Peon.Works
 
                     var updated = user with { Balance = balance.Value };
 
-                    if (balance == default)
+                    if (balance.Value == default)
                     {
                         logger.LogInformation("User {UserId} with empty balance at address {Address} detected.", user.Id, user.Address);
 
-                        var tx = await web3.Eth.GetEtherTransferService().TransferEtherAndWaitForReceiptAsync(user.Address, 1, converted, 1000000, null, cancellationToken);
+                        var tx = await web3.Eth.GetEtherTransferService().TransferEtherAndWaitForReceiptAsync(user.Address, 1m);
 
                         logger.LogInformation("Sending transaction {Hash}.", tx.TransactionHash);
 

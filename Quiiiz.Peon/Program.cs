@@ -12,7 +12,7 @@ builder.Services.Configure<Database>(builder.Configuration.GetSection(nameof(Dat
 
 builder.Services.AddTransient<IRepository<User>, MongoRepository<User>>();
 
-builder.Services.AddTask<CreateUsers>(x => x.AutoStart(TimeSpan.FromDays(1)));
+builder.Services.AddTask<CreateUsers>(x => x.AutoStart(TimeSpan.FromDays(1), TimeSpan.FromDays(1)));
 builder.Services.AddTask<SendCurrency>(x => x.AutoStart(TimeSpan.FromDays(1)));
 
 var host = builder.Build();
