@@ -2,7 +2,7 @@
 
 namespace Quiiiz.Peon.Configuration;
 
-public record class Blockchain
+public record Blockchain
 {
     public required string Seed { get; init; }
     public required string Password { get; init; }

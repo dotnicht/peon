@@ -33,7 +33,9 @@ namespace Quiiiz.Peon.Works
 
             if (balance.Value.IsZero) throw new InvalidOperationException("Empty root account balance.");
 
-            foreach (var user in repository.Content.Take(3))
+            var hashes = new List<string>();
+
+            foreach (var user in repository.Content)
             {
                 if (user.Balance == default)
                 {
@@ -45,18 +47,30 @@ namespace Quiiiz.Peon.Works
                     {
                         logger.LogInformation("User {UserId} with empty balance at address {Address} detected.", user.Id, user.Address);
 
-                        var tx = await web3.Eth.GetEtherTransferService().TransferEtherAndWaitForReceiptAsync(user.Address, 1m);
+                        //var tx = await web3.Eth
+                        //    .GetEtherTransferService()
+                        //    .TransferEtherAndWaitForReceiptAsync(user.Address, 1m, cancellationToken: cancellationToken);
 
-                        logger.LogInformation("Sending transaction {Hash}.", tx.TransactionHash);
+                        var hash = await web3.Eth.GetEtherTransferService().TransferEtherAsync(user.Address, 1m);
 
-                        balance = await web3.Eth.GetBalance.SendRequestAsync(user.Address);
+                        logger.LogInformation("Sending transaction {Hash}.", hash);
 
-                        updated = user with { Balance = balance.Value };
+                        hashes.Add(hash);
+
+                        //balance = await web3.Eth.GetBalance.SendRequestAsync(user.Address);
+
+                        //if (balance.Value != user.Balance)
+                        //{
+                        //    logger.LogInformation("Updating {Address} balance to {Balance}", user.Address, balance);
+                        //    updated = user with { Balance = (ulong)balance.Value };
+                        //}
                     }
 
                     await repository.Update(updated);
                 }
             }
+
+            var receipts = await web3.Eth.Transactions.GetTransactionReceipt.SendBatchRequestAsync(hashes.ToArray());
         }
     }
 }
