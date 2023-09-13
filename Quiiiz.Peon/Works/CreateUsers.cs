@@ -26,7 +26,7 @@ namespace Quiiiz.Peon.Works
             const int offset = 1000000;
             var wallet = new Wallet(options.Value.Seed, options.Value.Password);
 
-            for (var i = offset; i <= offset + 50; i++)
+            for (var i = offset; i <= offset + 10; i++)
             {
                 var account = wallet.GetAccount(i);
 
@@ -34,7 +34,7 @@ namespace Quiiiz.Peon.Works
 
                 if (existing == null)
                 {
-                    await repository.Add(new User { Id = i, Address = account.Address, Balance = 0 });
+                    await repository.Add(new User { Id = i, Address = account.Address, Balance = 0, Approved = 0 });
                     logger.LogInformation("Address {Address} for user {UserId} generated.", account.Address, i);
                 }
                 else if (existing.Address != account.Address)

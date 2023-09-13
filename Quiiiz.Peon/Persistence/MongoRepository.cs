@@ -10,12 +10,24 @@ namespace Quiiiz.Peon.Persistence;
 internal class MongoRepository<TItem> : IRepository<TItem> where TItem : class, IEntity
 {
     private readonly IMongoCollection<TItem> collection;
+    private static readonly object locker = new();
+    private static bool initialized = false;
 
     public IQueryable<TItem> Content => collection.AsQueryable();
 
     public MongoRepository(IOptions<Configuration.Database> options)
     {
-        BsonSerializer.RegisterSerializer(new BigIntegerSerializer());
+        if (!initialized)
+        {
+            lock (locker)
+            {
+                if (!initialized)
+                {
+                    BsonSerializer.RegisterSerializer(new BigIntegerSerializer());
+                    initialized = true;
+                }
+            }
+        }
 
         collection = new MongoClient(options.Value.Connection)
                 .GetDatabase(options.Value.Name)
@@ -26,7 +38,7 @@ internal class MongoRepository<TItem> : IRepository<TItem> where TItem : class, 
     public async Task Update(TItem item) => await collection.ReplaceOneAsync(x => x.Id == item.Id, item);
     public async Task Remove(TItem item) => await collection.DeleteOneAsync(x => x.Id == item.Id);
 
-    private class BigIntegerSerializer : SerializerBase<BigInteger>
+    private sealed class BigIntegerSerializer : SerializerBase<BigInteger>
     {
         public override BigInteger Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args) 
             => BigInteger.Parse(context.Reader.ReadString());
