@@ -9,7 +9,7 @@ public record Blockchain
     public required Credentials Users { get; init; }
     public required Credentials Master { get; init; }
 
-    public record Credentials
+    public class Credentials
     {
         public required string Seed { get; init; }
         public required string Password { get; init; }

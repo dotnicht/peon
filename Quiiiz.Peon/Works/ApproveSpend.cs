@@ -21,7 +21,8 @@ internal class ApproveSpend(ILogger<ApproveSpend> logger, IRepository<User> repo
         {
             if (user.Approved == 0)
             {
-                var account = new Wallet(options.Value.Users.Seed, options.Value.Users.Password).GetAccount((int)user.Id, options.Value.ChainId);
+                var account = new Wallet(options.Value.Users.Seed, options.Value.Users.Password)
+                    .GetAccount((int)user.Id, options.Value.ChainId);
                 var web3 = new Web3(account, options.Value.Node.ToString());
 
                 web3.Eth.TransactionManager.UseLegacyAsDefault = true;
