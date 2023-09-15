@@ -1,9 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Quiiiz.Peon.Configuration;
 using Quiiiz.Peon.Domain;
 using Quiiiz.Peon.Persistence;
 using Quiiiz.Peon.Works;
+using RecurrentTasks;
 
 var builder = Host.CreateApplicationBuilder();
 
@@ -12,9 +14,11 @@ builder.Services.Configure<Database>(builder.Configuration.GetSection(nameof(Dat
 
 builder.Services.AddTransient<IRepository<User>, MongoRepository<User>>();
 
-builder.Services.AddTask<CreateUsers>(x => x.AutoStart(TimeSpan.FromDays(1), TimeSpan.FromDays(0)));
+var works = Assembly.GetExecutingAssembly().GetTypes().Where(x => x.IsAssignableFrom(typeof(IRunnable)));
+
+builder.Services.AddTask<CheckUsers>(x => x.AutoStart(TimeSpan.FromDays(1), TimeSpan.FromDays(0)));
 builder.Services.AddTask<FillGas>(x => x.AutoStart(TimeSpan.FromDays(1), TimeSpan.FromMinutes(3)));
-builder.Services.AddTask<ApproveTransfer>(x => x.AutoStart(TimeSpan.FromDays(1), TimeSpan.FromMinutes(10)));
+builder.Services.AddTask<ApproveSpend>(x => x.AutoStart(TimeSpan.FromDays(1), TimeSpan.FromMinutes(10)));
 
 var host = builder.Build();
 var source = new CancellationTokenSource();

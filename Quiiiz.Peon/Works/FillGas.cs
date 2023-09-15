@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nethereum.HdWallet;
+using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Web3;
 using Quiiiz.Peon.Configuration;
 using Quiiiz.Peon.Domain;
@@ -31,8 +32,6 @@ internal class FillGas(ILogger<FillGas> logger, IRepository<User> repository, IO
             {
                 balance = await web3.Eth.GetBalance.SendRequestAsync(user.Address);
 
-                var updated = user with { Balance = balance.Value };
-
                 if (balance.Value == default)
                 {
                     logger.LogInformation("User {UserId} with empty balance at address {Address} detected.", user.Id, user.Address);
@@ -42,20 +41,17 @@ internal class FillGas(ILogger<FillGas> logger, IRepository<User> repository, IO
                     logger.LogInformation("Sending transaction {Hash}.", hash);
 
                     hashes.Add(hash);
-
-                    //balance = await web3.Eth.GetBalance.SendRequestAsync(user.Address);
-
-                    //if (balance.Value != user.Balance)
-                    //{
-                    //    logger.LogInformation("Updating {Address} balance to {Balance}", user.Address, balance);
-                    //    updated = user with { Balance = (ulong)balance.Value };
-                    //}
                 }
 
-                await repository.Update(updated);
+                await repository.Update(user with { Balance = balance.Value });
             }
         }
 
-        var receipts = await web3.Eth.Transactions.GetTransactionReceipt.SendBatchRequestAsync(hashes.ToArray());
+        var receipts = await web3.Eth.Transactions.GetTransactionReceipt.SendBatchRequestAsync([.. hashes]);
+
+        foreach (var receipt in receipts.Where(x => !x.Succeeded()))
+        {
+            logger.LogError("Transaction {Hash} failed.", receipt.TransactionHash);
+        }
     }
 }

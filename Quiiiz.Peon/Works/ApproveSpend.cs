@@ -12,7 +12,7 @@ using RecurrentTasks;
 
 namespace Quiiiz.Peon.Works;
 
-internal class ApproveTransfer(ILogger<ApproveTransfer> logger, IRepository<User> repository, IOptions<Blockchain> options)
+internal class ApproveSpend(ILogger<ApproveSpend> logger, IRepository<User> repository, IOptions<Blockchain> options)
     : IRunnable
 {
     public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)

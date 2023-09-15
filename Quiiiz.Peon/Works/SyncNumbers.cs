@@ -7,7 +7,7 @@ using RecurrentTasks;
 
 namespace Quiiiz.Peon.Works;
 
-internal class SyncBalances(IRepository<User> repository, IOptions<Configuration.Blockchain> options) 
+internal class SyncNumbers(IRepository<User> repository, IOptions<Configuration.Blockchain> options) 
     : IRunnable
 {
     public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
