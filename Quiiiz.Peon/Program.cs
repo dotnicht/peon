@@ -16,9 +16,9 @@ builder.Services.AddTransient<IRepository<User>, MongoRepository<User>>();
 
 var works = Assembly.GetExecutingAssembly().GetTypes().Where(x => x.IsAssignableFrom(typeof(IRunnable)));
 
-builder.Services.AddTask<CheckUsers>(x => x.AutoStart(TimeSpan.FromDays(1), TimeSpan.FromDays(0)));
-builder.Services.AddTask<FillGas>(x => x.AutoStart(TimeSpan.FromDays(1), TimeSpan.FromMinutes(3)));
-builder.Services.AddTask<ApproveSpend>(x => x.AutoStart(TimeSpan.FromDays(1), TimeSpan.FromMinutes(10)));
+//builder.Services.AddTask<CheckUsers>(x => x.AutoStart(TimeSpan.FromDays(1), TimeSpan.FromDays(0)));
+builder.Services.AddTask<FillGas>(x => x.AutoStart(TimeSpan.FromDays(1), TimeSpan.FromMinutes(0)));
+//builder.Services.AddTask<ApproveSpend>(x => x.AutoStart(TimeSpan.FromDays(1), TimeSpan.FromMinutes(10)));
 
 var host = builder.Build();
 var source = new CancellationTokenSource();

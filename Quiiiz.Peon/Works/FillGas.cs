@@ -47,6 +47,8 @@ internal class FillGas(ILogger<FillGas> logger, IRepository<User> repository, IO
             }
         }
 
+        if (hashes.Count == 0) return;
+
         var receipts = await web3.Eth.Transactions.GetTransactionReceipt.SendBatchRequestAsync([.. hashes]);
 
         foreach (var receipt in receipts.Where(x => !x.Succeeded()))
