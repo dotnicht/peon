@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Quiiiz.Peon.Domain;
+using Quiiiz.Peon.Persistence;
 
 namespace Quiiiz.Peon.Provider;
 
-internal class Address : IAddressProvider
+internal class Address(IRepository<User> repository) : IAddressProvider
 {
-    public Task<string> GetDepositAddress(long userId)
-    {
-        throw new NotImplementedException();
-    }
+    private readonly IRepository<User> repository = repository;
+
+    public async Task<string> GetDepositAddress(long userId) 
+        => await Task.FromResult((repository.Content.SingleOrDefault(x => x.Id == userId) 
+            ?? throw new ArgumentException($"User not found with id {userId}.", nameof(userId))).Address);
 }

@@ -6,41 +6,30 @@ using Quiiiz.Peon.Domain;
 using Quiiiz.Peon.Persistence;
 using RecurrentTasks;
 
-namespace Quiiiz.Peon.Works
+namespace Quiiiz.Peon.Works;
+
+internal class CreateUsers(ILogger<CreateUsers> logger, IRepository<User> repository, IOptions<Blockchain> options)
+    : IRunnable
 {
-    internal class CreateUsers : IRunnable
+    public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
     {
-        private readonly ILogger logger;
-        private readonly IRepository<User> repository;
-        private readonly IOptions<Blockchain> options;
+        const int offset = 1000000;
+        var wallet = new Wallet(options.Value.Users.Seed, options.Value.Users.Password);
 
-        public CreateUsers(ILogger<CreateUsers> logger, IRepository<User> repository, IOptions<Blockchain> options)
+        for (var i = offset; i <= offset + 3; i++)
         {
-            this.logger = logger;
-            this.repository = repository;
-            this.options = options;
-        }
+            var account = wallet.GetAccount(i);
 
-        public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
-        {
-            const int offset = 1000000;
-            var wallet = new Wallet(options.Value.Users.Seed, options.Value.Users.Password);
+            var existing = repository.Content.SingleOrDefault(x => x.Id == i);
 
-            for (var i = offset; i <= offset + 3; i++)
+            if (existing == null)
             {
-                var account = wallet.GetAccount(i);
-
-                var existing = repository.Content.SingleOrDefault(x => x.Id == i);
-
-                if (existing == null)
-                {
-                    await repository.Add(new User { Id = i, Address = account.Address, Balance = 0, Approved = 0 });
-                    logger.LogInformation("Address {Address} for user {UserId} generated.", account.Address, i);
-                }
-                else if (existing.Address != account.Address)
-                {
-                    logger.LogWarning("Wallet credentials changed. Address {Address} for user {UserId} is no longer valid.", existing.Address, existing.Id);
-                }
+                await repository.Add(new User { Id = i, Address = account.Address, Balance = 0, Approved = 0 });
+                logger.LogInformation("Address {Address} for user {UserId} generated.", account.Address, i);
+            }
+            else if (existing.Address != account.Address)
+            {
+                logger.LogWarning("Wallet credentials changed. Address {Address} for user {UserId} is no longer valid.", existing.Address, existing.Id);
             }
         }
     }
