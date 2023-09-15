@@ -9,13 +9,13 @@ using RecurrentTasks;
 
 namespace Quiiiz.Peon.Works
 {
-    internal class SendCurrency : IRunnable
+    internal class FillGas : IRunnable
     {
         private readonly ILogger logger;
         private readonly IRepository<User> repository;
         private readonly IOptions<Blockchain> options;
 
-        public SendCurrency(ILogger<SendCurrency> logger, IRepository<User> repository, IOptions<Blockchain> options)
+        public FillGas(ILogger<FillGas> logger, IRepository<User> repository, IOptions<Blockchain> options)
         {
             this.logger = logger;
             this.repository = repository;
@@ -24,7 +24,7 @@ namespace Quiiiz.Peon.Works
 
         public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
         {
-            var account = new Wallet(options.Value.Seed, options.Value.Password).GetAccount(default, options.Value.ChainId);
+            var account = new Wallet(options.Value.Master.Seed, options.Value.Master.Password).GetAccount(default, options.Value.ChainId);
             var web3 = new Web3(account, options.Value.Node.ToString());
 
             web3.Eth.TransactionManager.UseLegacyAsDefault = true;

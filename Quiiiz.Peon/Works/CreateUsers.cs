@@ -24,9 +24,9 @@ namespace Quiiiz.Peon.Works
         public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
         {
             const int offset = 1000000;
-            var wallet = new Wallet(options.Value.Seed, options.Value.Password);
+            var wallet = new Wallet(options.Value.Users.Seed, options.Value.Users.Password);
 
-            for (var i = offset; i <= offset + 10; i++)
+            for (var i = offset; i <= offset + 3; i++)
             {
                 var account = wallet.GetAccount(i);
 
