@@ -13,6 +13,8 @@ internal class SyncNumbers(IRepository<User> repository, IOptions<Configuration.
 {
     public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
     {
+        var cfg = options.Value;
+
         var web3 = new Web3(new Wallet(options.Value.Master.Seed, options.Value.Master.Password)
             .GetAccount(default, options.Value.ChainId), options.Value.Node.ToString());
 
@@ -24,11 +26,19 @@ internal class SyncNumbers(IRepository<User> repository, IOptions<Configuration.
 
             var approved = await web3.Eth.ERC20
                 .GetContractService(options.Value.TokenAddress)
-                .AllowedQueryAsync(new AllowedFunction
+                .AllowanceQueryAsync(new AllowanceFunction
                 {
                     Spender = options.Value.SpenderAddress,
                     Owner = web3.TransactionManager.Account.Address
                 });
+
+            //var approved = await web3.Eth.ERC20
+            //    .GetContractService(options.Value.TokenAddress)
+            //    .AllowedQueryAsync(new AllowedFunction
+            //    {
+            //        Spender = options.Value.SpenderAddress,
+            //        Owner = web3.TransactionManager.Account.Address
+            //    });
 
             if (balance != user.Balance || approved != user.Approved)
             {
