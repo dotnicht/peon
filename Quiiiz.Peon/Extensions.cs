@@ -9,8 +9,8 @@ namespace Quiiiz.Peon;
 public static class Extensions
 {
     public static IServiceCollection AddAddressProvider(this IServiceCollection services, string connection, string database)
-    {
-        services.AddSingleton(Options.Create(new Configuration.Database { Connection = connection, Name = database }));
-        return services.AddTransient<IAddressProvider, Address>().AddTransient<IRepository<User>, MongoRepository<User>>();
-    }
+        => services
+            .AddSingleton(Options.Create(new Configuration.Database { Connection = connection, Name = database }))
+            .AddTransient<IAddressProvider, Address>()
+            .AddTransient<IRepository<User>, MongoRepository<User>>();
 }

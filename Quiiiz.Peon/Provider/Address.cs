@@ -5,9 +5,7 @@ namespace Quiiiz.Peon.Provider;
 
 internal class Address(IRepository<User> repository) : IAddressProvider
 {
-    private readonly IRepository<User> repository = repository;
-
-    public async Task<string> GetDepositAddress(long userId) 
-        => await Task.FromResult((repository.Content.SingleOrDefault(x => x.Id == userId) 
+    public async Task<string> GetDepositAddress(long userId)
+        => await Task.FromResult((repository.Content.SingleOrDefault(x => x.Id == userId)
             ?? throw new ArgumentException($"User not found with id {userId}.", nameof(userId))).Address);
 }
