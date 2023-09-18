@@ -10,9 +10,19 @@ using RecurrentTasks;
 
 namespace Quiiiz.Peon.Works;
 
-internal class FillGas(ILogger<FillGas> logger, IRepository<User> repository, IOptions<Blockchain> options) 
-    : IRunnable
+internal class FillGas : IRunnable
 {
+    private readonly ILogger<FillGas> logger;
+    private readonly IOptions<Blockchain> options;
+    private readonly IRepository<User> repository;
+
+    public FillGas(ILogger<FillGas> logger, IOptions<Blockchain> options, IRepository<User> repository)
+    {
+        this.logger = logger;
+        this.options = options;
+        this.repository = repository;
+    }
+
     public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
     {
         var account = new Wallet(options.Value.Master.Seed, options.Value.Master.Password).GetAccount(default, options.Value.ChainId);
@@ -49,7 +59,7 @@ internal class FillGas(ILogger<FillGas> logger, IRepository<User> repository, IO
 
         if (hashes.Count == 0) return;
 
-        var receipts = await web3.Eth.Transactions.GetTransactionReceipt.SendBatchRequestAsync([.. hashes]);
+        var receipts = await web3.Eth.Transactions.GetTransactionReceipt.SendBatchRequestAsync(hashes.ToArray());
 
         foreach (var receipt in receipts.Where(x => !x.Succeeded()))
         {

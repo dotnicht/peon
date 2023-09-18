@@ -11,9 +11,19 @@ using RecurrentTasks;
 
 namespace Quiiiz.Peon.Works;
 
-internal class ApproveSpend(ILogger<ApproveSpend> logger, IRepository<User> repository, IOptions<Blockchain> options)
-    : IRunnable
+internal class ApproveSpend : IRunnable
 {
+    private readonly ILogger<ApproveSpend> logger;
+    private readonly IOptions<Blockchain> options;
+    private readonly IRepository<User> repository;
+
+    public ApproveSpend(ILogger<ApproveSpend> logger, IOptions<Blockchain> options, IRepository<User> repository)
+    {
+        this.logger = logger;
+        this.options = options;
+        this.repository = repository;
+    }
+
     public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
     {
         foreach (var user in repository.Content)

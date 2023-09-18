@@ -8,9 +8,19 @@ using RecurrentTasks;
 
 namespace Quiiiz.Peon.Works;
 
-internal class CheckUsers(ILogger<CheckUsers> logger, IRepository<User> repository, IOptions<Blockchain> options)
-    : IRunnable
+internal class CheckUsers : IRunnable
 {
+    private readonly ILogger<CheckUsers> logger;
+    private readonly IOptions<Blockchain> options;
+    private readonly IRepository<User> repository;
+
+    public CheckUsers(ILogger<CheckUsers> logger, IOptions<Blockchain> options, IRepository<User> repository)
+    {
+        this.logger = logger;
+        this.options = options;
+        this.repository = repository;
+    }
+
     public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
     {
         const int offset = 1000000;

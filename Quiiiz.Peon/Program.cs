@@ -19,7 +19,7 @@ var works = Assembly.GetExecutingAssembly().GetTypes().Where(x => x.IsAssignable
 //builder.Services.AddTask<CheckUsers>(x => x.AutoStart(TimeSpan.FromDays(1), TimeSpan.FromDays(0)));
 //builder.Services.AddTask<FillGas>(x => x.AutoStart(TimeSpan.FromDays(1), TimeSpan.FromMinutes(0)));
 //builder.Services.AddTask<ApproveSpend>(x => x.AutoStart(TimeSpan.FromDays(0), TimeSpan.FromMinutes(0)));
-builder.Services.AddTask<SyncNumbers>(x => x.AutoStart(TimeSpan.FromDays(0), TimeSpan.FromMinutes(0)));
+builder.Services.AddTask<CheckUsers>(x => x.AutoStart(TimeSpan.FromDays(0), TimeSpan.FromMinutes(0)));
 
 var host = builder.Build();
 var source = new CancellationTokenSource();

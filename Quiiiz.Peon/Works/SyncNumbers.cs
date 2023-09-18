@@ -2,15 +2,24 @@
 using Nethereum.Contracts.Standards.ERC20.ContractDefinition;
 using Nethereum.HdWallet;
 using Nethereum.Web3;
+using Quiiiz.Peon.Configuration;
 using Quiiiz.Peon.Domain;
 using Quiiiz.Peon.Persistence;
 using RecurrentTasks;
 
 namespace Quiiiz.Peon.Works;
 
-internal class SyncNumbers(IRepository<User> repository, IOptions<Configuration.Blockchain> options)
-    : IRunnable
+internal class SyncNumbers : IRunnable
 {
+    private readonly IRepository<User> repository;
+    private readonly IOptions<Configuration.Blockchain> options;
+
+    public SyncNumbers(IRepository<User> repository, IOptions<Blockchain> options)
+    {
+        this.repository = repository;
+        this.options = options;
+    }
+
     public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
     {
         var web3 = new Web3(new Wallet(options.Value.Master.Seed, options.Value.Master.Password)
