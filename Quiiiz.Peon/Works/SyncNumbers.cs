@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Nethereum.Contracts.Standards.ERC20.ContractDefinition;
 using Nethereum.HdWallet;
 using Nethereum.Web3;
@@ -12,12 +13,14 @@ namespace Quiiiz.Peon.Works;
 internal class SyncNumbers : IRunnable
 {
     private readonly IRepository<User> repository;
-    private readonly IOptions<Configuration.Blockchain> options;
+    private readonly IOptions<Blockchain> options;
+    private readonly ILogger<SyncNumbers> logger;
 
-    public SyncNumbers(IRepository<User> repository, IOptions<Blockchain> options)
+    public SyncNumbers(IRepository<User> repository, IOptions<Blockchain> options, ILogger<SyncNumbers> logger)
     {
         this.repository = repository;
         this.options = options;
+        this.logger = logger;
     }
 
     public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
@@ -41,6 +44,7 @@ internal class SyncNumbers : IRunnable
 
             if (balance != user.Balance || approved != user.Approved)
             {
+                logger.LogInformation("Updating user {User}.", user);
                 await repository.Update(user with { Balance = balance, Approved = approved });
             }
         }
