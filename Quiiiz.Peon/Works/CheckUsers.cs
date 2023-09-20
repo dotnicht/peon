@@ -11,22 +11,23 @@ namespace Quiiiz.Peon.Works;
 internal class CheckUsers : IRunnable
 {
     private readonly ILogger<CheckUsers> logger;
-    private readonly IOptions<Blockchain> options;
+    private readonly IOptions<Blockchain> blockchain;
+    private readonly IOptions<Configuration> options;
     private readonly IRepository<User> repository;
 
-    public CheckUsers(ILogger<CheckUsers> logger, IOptions<Blockchain> options, IRepository<User> repository)
+    public CheckUsers(ILogger<CheckUsers> logger, IOptions<Blockchain> blockchain, IRepository<User> repository, IOptions<Configuration> options)
     {
         this.logger = logger;
+        this.blockchain = blockchain;
         this.options = options;
         this.repository = repository;
     }
 
     public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
     {
-        const int offset = 1000000;
-        var wallet = new Wallet(options.Value.Users.Seed, options.Value.Users.Password);
+        var wallet = new Wallet(blockchain.Value.Users.Seed, blockchain.Value.Users.Password);
 
-        for (var i = offset; i <= offset + 3; i++)
+        for (var i = options.Value.Offset; i <= options.Value.Offset + options.Value.UsersNumber; i++)
         {
             var account = wallet.GetAccount(i);
 
@@ -34,7 +35,7 @@ internal class CheckUsers : IRunnable
 
             if (existing == null)
             {
-                await repository.Add(new User { Id = i, Address = account.Address, Balance = 0, Approved = 0 });
+                await repository.Add(new User { Id = i, Address = account.Address, Balance = 0, TokenBalance = 0, Approved = 0 });
                 logger.LogInformation("Address {Address} for user {UserId} generated.", account.Address, i);
             }
             else if (existing.Address != account.Address)
@@ -42,5 +43,11 @@ internal class CheckUsers : IRunnable
                 logger.LogWarning("Wallet credentials changed. Address {Address} for user {UserId} is no longer valid.", existing.Address, existing.Id);
             }
         }
+    }
+
+    public sealed record class Configuration : WorkConfigurationBase 
+    { 
+        public int Offset { get; init; }
+        public int UsersNumber { get; init; }
     }
 }
