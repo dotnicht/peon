@@ -33,12 +33,7 @@ internal class ApproveSpend : IRunnable
         {
             if (user.Approved == 0)
             {
-                var account = new Wallet(blockchain.Value.Users.Seed, blockchain.Value.Users.Password)
-                    .GetAccount((int)user.Id, blockchain.Value.ChainId);
-
-                var web3 = new Web3(account, blockchain.Value.Node.ToString());
-
-                web3.Eth.TransactionManager.UseLegacyAsDefault = true;
+                var web3 = blockchain.Value.CreateUser((int)user.Id);
 
                 var receipt = await web3.Eth.ERC20
                     .GetContractService(blockchain.Value.TokenAddress)

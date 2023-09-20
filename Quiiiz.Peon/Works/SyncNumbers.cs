@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nethereum.Contracts.Standards.ERC20.ContractDefinition;
-using Nethereum.HdWallet;
-using Nethereum.Web3;
 using Quiiiz.Peon.Configuration;
 using Quiiiz.Peon.Domain;
 using Quiiiz.Peon.Persistence;
@@ -27,10 +25,7 @@ internal class SyncNumbers : IRunnable
 
     public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
     {
-        var web3 = new Web3(new Wallet(blockchain.Value.Master.Seed, blockchain.Value.Master.Password)
-            .GetAccount(default, blockchain.Value.ChainId), blockchain.Value.Node.ToString());
-
-        web3.Eth.TransactionManager.UseLegacyAsDefault = true;
+        var web3 = blockchain.Value.CreateMaster();
 
         foreach (var user in repository.Content)
         {

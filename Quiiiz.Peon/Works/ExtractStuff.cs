@@ -24,18 +24,16 @@ internal class ExtractStuff : IRunnable
 
     public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
     {
-
-
         foreach (var user in repository.Content)
         {
             if (options.Value.Token.Extract && user.TokenBalance > 0)
             {
-
+                throw new NotImplementedException();
             }
 
             if (options.Value.Gas.Extract && user.Balance > 0)
             {
-
+                throw new NotImplementedException();
             }
         }
     }
@@ -49,7 +47,6 @@ internal class ExtractStuff : IRunnable
         {
             public required bool Extract { get; init; }
             public required string Address { get; init; }
-            public required bool UseMaster { get; init; }
         }
     }
 }
