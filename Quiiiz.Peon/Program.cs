@@ -16,6 +16,7 @@ builder.Services.Configure<CheckUsers.Configuration>(section.GetSection(nameof(C
 builder.Services.Configure<ApproveSpend.Configuration>(section.GetSection(nameof(ApproveSpend)));
 builder.Services.Configure<FillGas.Configuration>(section.GetSection(nameof(FillGas)));
 builder.Services.Configure<SyncNumbers.Configuration>(section.GetSection(nameof(SyncNumbers)));
+builder.Services.Configure<ExtractStuff.Configuration>(section.GetSection(nameof(ExtractStuff)));
 
 builder.Services.AddTransient<IRepository<User>, MongoRepository<User>>();
 
@@ -32,6 +33,9 @@ builder.Services.AddTask<FillGas>(x => x.AutoStart(options.Interval, options.Fir
 
 options = services.GetRequiredService<IOptions<SyncNumbers.Configuration>>().Value;
 builder.Services.AddTask<SyncNumbers>(x => x.AutoStart(options.Interval, options.FirstRunDelay));
+
+options = services.GetRequiredService<IOptions<ExtractStuff.Configuration>>().Value;
+builder.Services.AddTask<ExtractStuff>(x => x.AutoStart(options.Interval, options.FirstRunDelay));
 
 var host = builder.Build();
 var source = new CancellationTokenSource();

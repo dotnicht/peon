@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Nethereum.HdWallet;
 using Nethereum.RPC.Eth.DTOs;
-using Nethereum.Web3;
 using Quiiiz.Peon.Configuration;
 using Quiiiz.Peon.Domain;
 using Quiiiz.Peon.Persistence;
@@ -27,16 +25,7 @@ internal class FillGas : IRunnable
 
     public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
     {
-        var account = new Wallet(blockchain.Value.Master.Seed, blockchain.Value.Master.Password)
-            .GetAccount(blockchain.Value.MasterIndex, blockchain.Value.ChainId);
-
-        var web3 = new Web3(account, blockchain.Value.Node.ToString());
-
-        web3.Eth.TransactionManager.UseLegacyAsDefault = true;
-
-        var balance = await web3.Eth.GetBalance.SendRequestAsync(account.Address);
-
-        if (balance.Value.IsZero) throw new InvalidOperationException("Empty root account balance.");
+        var web3 = blockchain.Value.CreateMaster();
 
         var hashes = new List<string>();
 
@@ -44,7 +33,7 @@ internal class FillGas : IRunnable
         {
             if (user.Balance == default)
             {
-                balance = await web3.Eth.GetBalance.SendRequestAsync(user.Address);
+                var balance = await web3.Eth.GetBalance.SendRequestAsync(user.Address);
 
                 if (balance.Value == default)
                 {
