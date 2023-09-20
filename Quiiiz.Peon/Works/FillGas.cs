@@ -13,20 +13,24 @@ namespace Quiiiz.Peon.Works;
 internal class FillGas : IRunnable
 {
     private readonly ILogger<FillGas> logger;
-    private readonly IOptions<Blockchain> options;
+    private readonly IOptions<Blockchain> blockchain;
+    private readonly IOptions<Configuration> options;
     private readonly IRepository<User> repository;
 
-    public FillGas(ILogger<FillGas> logger, IOptions<Blockchain> options, IRepository<User> repository)
+    public FillGas(ILogger<FillGas> logger, IOptions<Blockchain> blockchain, IRepository<User> repository, IOptions<Configuration> options)
     {
         this.logger = logger;
-        this.options = options;
+        this.blockchain = blockchain;
         this.repository = repository;
+        this.options = options;
     }
 
     public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
     {
-        var account = new Wallet(options.Value.Master.Seed, options.Value.Master.Password).GetAccount(default, options.Value.ChainId);
-        var web3 = new Web3(account, options.Value.Node.ToString());
+        var account = new Wallet(blockchain.Value.Master.Seed, blockchain.Value.Master.Password)
+            .GetAccount(blockchain.Value.MasterIndex, blockchain.Value.ChainId);
+
+        var web3 = new Web3(account, blockchain.Value.Node.ToString());
 
         web3.Eth.TransactionManager.UseLegacyAsDefault = true;
 
@@ -65,5 +69,10 @@ internal class FillGas : IRunnable
         {
             logger.LogError("Transaction {Hash} failed.", receipt.TransactionHash);
         }
+    }
+
+    public sealed record class Configuration : WorkConfigurationBase
+    {
+        
     }
 }

@@ -6,6 +6,7 @@ public record Blockchain
     public required long ChainId { get; init; }
     public required string TokenAddress { get; init; }
     public required string SpenderAddress { get; init; }
+    public required int MasterIndex { get; init; }
     public required Credentials Users { get; init; }
     public required Credentials Master { get; init; }
 
