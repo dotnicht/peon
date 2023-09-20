@@ -35,7 +35,7 @@ internal class CheckUsers : IRunnable
 
             if (existing == null)
             {
-                await repository.Add(new User { Id = i, Address = account.Address, Balance = 0, TokenBalance = 0, Approved = 0 });
+                await repository.Add(new User { Id = i, Address = account.Address, Gas = 0, Token = 0, Approved = 0 });
                 logger.LogInformation("Address {Address} for user {UserId} generated.", account.Address, i);
             }
             else if (existing.Address != account.Address)

@@ -31,7 +31,7 @@ internal class FillGas : IRunnable
 
         foreach (var user in repository.Content)
         {
-            if (user.Balance == default)
+            if (user.Gas == default)
             {
                 var balance = await web3.Eth.GetBalance.SendRequestAsync(user.Address);
 
@@ -46,7 +46,7 @@ internal class FillGas : IRunnable
                     hashes.Add(hash);
                 }
 
-                await repository.Update(user with { Balance = balance.Value });
+                await repository.Update(user with { Gas = balance.Value });
             }
         }
 

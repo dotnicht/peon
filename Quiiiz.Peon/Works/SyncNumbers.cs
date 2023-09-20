@@ -46,10 +46,10 @@ internal class SyncNumbers : IRunnable
                     Owner = user.Address,
                 });
 
-            if (balance != user.Balance || approved != user.Approved || token != user.TokenBalance)
+            if (balance != user.Gas || approved != user.Approved || token != user.Token)
             {
                 logger.LogInformation("Updating user {User}.", user);
-                await repository.Update(user with { Balance = balance, Approved = approved, TokenBalance = token });
+                await repository.Update(user with { Gas = balance, Approved = approved, Token = token });
             }
         }
     }
