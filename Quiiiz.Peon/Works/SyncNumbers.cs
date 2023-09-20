@@ -29,33 +29,41 @@ internal class SyncNumbers : IRunnable
 
         foreach (var user in repository.Content)
         {
-            var balance = await web3.Eth.GetBalance.SendRequestAsync(user.Address);
+            var gas = options.Value.Gas
+                ? await web3.Eth.GetBalance.SendRequestAsync(user.Address)
+                : user.Gas;
 
-            var approved = await web3.Eth.ERC20
-                .GetContractService(blockchain.Value.TokenAddress)
-                .AllowanceQueryAsync(new AllowanceFunction
-                {
-                    Spender = blockchain.Value.SpenderAddress,
-                    Owner = user.Address
-                });
+            var approved = options.Value.Approved
+                ? await web3.Eth.ERC20
+                    .GetContractService(blockchain.Value.TokenAddress)
+                    .AllowanceQueryAsync(new AllowanceFunction
+                    {
+                        Spender = blockchain.Value.SpenderAddress,
+                        Owner = user.Address
+                    })
+                : user.Approved;
 
-            var token = await web3.Eth.ERC20
-                .GetContractService(blockchain.Value.TokenAddress)
-                .BalanceOfQueryAsync(new BalanceOfFunction
-                { 
-                    Owner = user.Address,
-                });
+            var token = options.Value.Token
+                ? await web3.Eth.ERC20
+                    .GetContractService(blockchain.Value.TokenAddress)
+                    .BalanceOfQueryAsync(new BalanceOfFunction
+                    {
+                        Owner = user.Address,
+                    })
+                : user.Token;
 
-            if (balance != user.Balance || approved != user.Approved || token != user.TokenBalance)
+            if (gas != user.Gas || approved != user.Approved || token != user.Token)
             {
                 logger.LogInformation("Updating user {User}.", user);
-                await repository.Update(user with { Balance = balance, Approved = approved, TokenBalance = token });
+                await repository.Update(user with { Gas = gas, Approved = approved, Token = token });
             }
         }
     }
 
     public sealed record class Configuration : WorkConfigurationBase
-    { 
-    
+    {
+        public required bool Gas { get; init; }
+        public required bool Token { get; init; }
+        public required bool Approved { get; init; }
     }
 }

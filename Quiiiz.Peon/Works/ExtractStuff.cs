@@ -26,12 +26,12 @@ internal class ExtractStuff : IRunnable
     {
         foreach (var user in repository.Content)
         {
-            if (options.Value.Token.Extract && user.TokenBalance > 0)
+            if (options.Value.Token.Extract && user.Token > 0)
             {
                 throw new NotImplementedException();
             }
 
-            if (options.Value.Gas.Extract && user.Balance > 0)
+            if (options.Value.Gas.Extract && user.Gas > 0)
             {
                 throw new NotImplementedException();
             }

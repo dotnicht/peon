@@ -52,6 +52,6 @@ internal class ApproveSpend : IRunnable
 
     public sealed record class Configuration : WorkConfigurationBase
     {
-        public ulong Amount { get; init; }
+        public long Amount { get; init; }
     }
 }
