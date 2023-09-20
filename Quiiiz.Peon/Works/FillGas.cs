@@ -50,7 +50,7 @@ internal class FillGas : IRunnable
                 {
                     logger.LogInformation("User {UserId} with empty balance at address {Address} detected.", user.Id, user.Address);
 
-                    var hash = await web3.Eth.GetEtherTransferService().TransferEtherAsync(user.Address, 1m);
+                    var hash = await web3.Eth.GetEtherTransferService().TransferEtherAsync(user.Address, options.Value.Amount);
 
                     logger.LogInformation("Sending transaction {Hash}.", hash);
 
@@ -73,6 +73,6 @@ internal class FillGas : IRunnable
 
     public sealed record class Configuration : WorkConfigurationBase
     {
-        
+        public required long Amount { get; init; }
     }
 }
