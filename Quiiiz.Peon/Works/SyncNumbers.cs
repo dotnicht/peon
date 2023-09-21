@@ -54,8 +54,9 @@ internal class SyncNumbers : IRunnable
 
             if (gas != user.Gas || approved != user.Approved || token != user.Token)
             {
-                logger.LogInformation("Updating user {User}.", user);
-                await repository.Update(user with { Gas = gas, Approved = approved, Token = token });
+                var updated = user with { Gas = gas, Approved = approved, Token = token, Updated = DateTime.UtcNow };
+                await repository.Update(updated);
+                logger.LogInformation("Updating user {User}.", updated);
             }
         }
     }

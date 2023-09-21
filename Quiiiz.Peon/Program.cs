@@ -23,19 +23,19 @@ builder.Services.AddTransient<IRepository<User>, MongoRepository<User>>();
 var services = builder.Services.BuildServiceProvider();
 
 var options = (services.GetRequiredService<IOptions<CheckUsers.Configuration>>().Value as WorkConfigurationBase)!;
-builder.Services.AddTask<CheckUsers>(x => x.AutoStart(options.Interval, options.FirstRunDelay));
+//builder.Services.AddTask<CheckUsers>(x => x.AutoStart(options.Interval, options.FirstRunDelay));
 
 options = services.GetRequiredService<IOptions<ApproveSpend.Configuration>>().Value;
-builder.Services.AddTask<ApproveSpend>(x => x.AutoStart(options.Interval, options.FirstRunDelay));
+//builder.Services.AddTask<ApproveSpend>();
 
 options = services.GetRequiredService<IOptions<FillGas.Configuration>>().Value;
-builder.Services.AddTask<FillGas>(x => x.AutoStart(options.Interval, options.FirstRunDelay));
+//builder.Services.AddTask<FillGas>();
 
 options = services.GetRequiredService<IOptions<SyncNumbers.Configuration>>().Value;
-builder.Services.AddTask<SyncNumbers>(x => x.AutoStart(options.Interval, options.FirstRunDelay));
+builder.Services.AddTask<SyncNumbers>();
 
 options = services.GetRequiredService<IOptions<ExtractStuff.Configuration>>().Value;
-builder.Services.AddTask<ExtractStuff>(x => x.AutoStart(options.Interval, options.FirstRunDelay));
+//builder.Services.AddTask<ExtractStuff>(x => x.AutoStart(options.Interval, options.FirstRunDelay));
 
 var host = builder.Build();
 var source = new CancellationTokenSource();

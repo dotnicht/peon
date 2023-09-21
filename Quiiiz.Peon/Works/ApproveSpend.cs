@@ -43,7 +43,7 @@ internal class ApproveSpend : IRunnable
                         Value = options.Value.Amount
                     }, cancellationToken);
 
-                logger.LogInformation("Approve transaction {Hash}.", receipt.TransactionHash);
+                logger.LogInformation("Approve transaction {Hash} by user {User}.", receipt.TransactionHash, user);
 
                 if (!receipt.Succeeded()) logger.LogError("Approve transaction failed {Hash}.", receipt.TransactionHash);
             }
