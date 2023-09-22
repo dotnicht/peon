@@ -2,7 +2,7 @@
 
 namespace Quiiiz.Peon.Domain;
 
-public record User : IEntity
+public record User : IEntity, IAudit
 {
     public required long Id { get; init; }
     public required string Address { get; init; }

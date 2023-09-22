@@ -2,7 +2,7 @@
 
 namespace Quiiiz.Peon.Persistence;
 
-public interface IRepository<TItem> where TItem : class, IEntity
+public interface IRepository<TItem> where TItem : class, IEntity, IAudit
 {
     IQueryable<TItem> Content { get; }
     Task Add(TItem item);

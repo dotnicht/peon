@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Nethereum.Contracts.Standards.ERC20.ContractDefinition;
 using Nethereum.HdWallet;
 using Nethereum.Web3;
 using Quiiiz.Peon.Configuration;
@@ -17,8 +18,52 @@ public static class Extensions
             .AddTransient<IAddressProvider, Address>()
             .AddTransient<IRepository<User>, MongoRepository<User>>();
 
-    public static Web3 CreateUser(this Blockchain blockchain, int index)
-        => Create(blockchain, index, blockchain.Users);
+    public static async Task<User> UpdateGas(this User user, IRepository<User> repository, Blockchain blockchain)
+    {
+        var updated = user with
+        {
+            Gas = await blockchain
+                .CreateUser(user).Eth.GetBalance
+                .SendRequestAsync(user.Address),
+            Updated = DateTime.UtcNow
+        };
+
+        await repository.Update(updated);
+        return updated;
+    }
+
+    public static async Task<User> UpdateToken(this User user, IRepository<User> repository, Blockchain blockchain)
+    {
+        var updated = user with
+        {
+            Token = await blockchain
+                .CreateUser(user).Eth.ERC20
+                .GetContractService(blockchain.TokenAddress)
+                .BalanceOfQueryAsync(new BalanceOfFunction { Owner = user.Address }),
+            Updated = DateTime.UtcNow
+        };
+
+        await repository.Update(updated);
+        return updated;
+    }
+
+    public static async Task<User> UpdateApproved(this User user, IRepository<User> repository, Blockchain blockchain)
+    {
+        var updated = user with
+        {
+            Approved = await blockchain
+                .CreateUser(user).Eth.ERC20
+                .GetContractService(blockchain.TokenAddress)
+                .AllowanceQueryAsync(new AllowanceFunction { Spender = blockchain.SpenderAddress, Owner = user.Address }),
+            Updated = DateTime.UtcNow
+        };
+
+        await repository.Update(updated);
+        return updated;
+    }
+
+    public static Web3 CreateUser(this Blockchain blockchain, User user)
+        => Create(blockchain, (int)user.Id, blockchain.Users);
 
     public static Web3 CreateMaster(this Blockchain blockchain)
         => Create(blockchain, blockchain.MasterIndex, blockchain.Master);

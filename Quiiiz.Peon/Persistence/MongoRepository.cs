@@ -7,7 +7,7 @@ using Quiiiz.Peon.Domain;
 
 namespace Quiiiz.Peon.Persistence;
 
-internal sealed class MongoRepository<TItem> : IRepository<TItem> where TItem : class, IEntity
+internal sealed class MongoRepository<TItem> : IRepository<TItem> where TItem : class, IEntity, IAudit
 {
     private readonly IMongoCollection<TItem> collection;
 

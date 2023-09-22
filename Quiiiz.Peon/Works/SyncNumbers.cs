@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Nethereum.Contracts.Standards.ERC20.ContractDefinition;
 using Quiiiz.Peon.Configuration;
 using Quiiiz.Peon.Domain;
 using Quiiiz.Peon.Persistence;
@@ -24,38 +23,21 @@ internal class SyncNumbers : IWork
 
     public async Task Work(CancellationToken cancellationToken)
     {
-        var web3 = blockchain.Value.CreateMaster();
-
         foreach (var user in repository.Content)
         {
-            var gas = options.Value.Gas
-                ? await web3.Eth.GetBalance.SendRequestAsync(user.Address)
-                : user.Gas;
-
-            var approved = options.Value.Approved
-                ? await web3.Eth.ERC20
-                    .GetContractService(blockchain.Value.TokenAddress)
-                    .AllowanceQueryAsync(new AllowanceFunction
-                    {
-                        Spender = blockchain.Value.SpenderAddress,
-                        Owner = user.Address
-                    })
-                : user.Approved;
-
-            var token = options.Value.Token
-                ? await web3.Eth.ERC20
-                    .GetContractService(blockchain.Value.TokenAddress)
-                    .BalanceOfQueryAsync(new BalanceOfFunction
-                    {
-                        Owner = user.Address,
-                    })
-                : user.Token;
-
-            if (gas != user.Gas || approved != user.Approved || token != user.Token)
+            if (options.Value.Gas)
             {
-                var updated = user with { Gas = gas, Approved = approved, Token = token, Updated = DateTime.UtcNow };
-                await repository.Update(updated);
-                logger.LogInformation("Updating user {User}.", updated);
+                logger.LogInformation("Updating gas amount for user {User}.", await user.UpdateGas(repository, blockchain.Value));
+            }
+
+            if (options.Value.Token)
+            {
+                logger.LogInformation("Updating token amount for user {User}.", await user.UpdateToken(repository, blockchain.Value));
+            }
+
+            if (options.Value.Approved)
+            {
+                logger.LogInformation("Updating approved amount for user {User}.", await user.UpdateApproved(repository, blockchain.Value));
             }
         }
     }

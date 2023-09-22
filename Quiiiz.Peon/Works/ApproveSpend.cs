@@ -29,7 +29,7 @@ internal class ApproveSpend : IWork
         {
             if (user.Approved == 0)
             {
-                var web3 = blockchain.Value.CreateUser((int)user.Id);
+                var web3 = blockchain.Value.CreateUser(user);
 
                 var receipt = await web3.Eth.ERC20
                     .GetContractService(blockchain.Value.TokenAddress)
@@ -41,19 +41,17 @@ internal class ApproveSpend : IWork
 
                 logger.LogInformation("Approve transaction {Hash} by user {User}.", receipt.TransactionHash, user);
 
-                if (!receipt.Succeeded()) logger.LogError("Approve transaction failed {Hash}.", receipt.TransactionHash);
+                if (!receipt.Succeeded())
+                {
+                    logger.LogError("Approve transaction failed {Hash}.", receipt.TransactionHash);
+                }
 
-                var approve = await web3.Eth.ERC20
-                    .GetContractService(blockchain.Value.TokenAddress)
-                    .AllowanceQueryAsync(new AllowanceFunction
-                    {
-                        Spender = blockchain.Value.SpenderAddress,
-                        Owner = user.Address
-                    });
+                var updated = await user.UpdateApproved(repository, blockchain.Value);
 
-                if (approve == 0) throw new InvalidOperationException("Zero allowance detected. ");
-
-                await repository.Update(user with { Approved = approve });
+                if (updated.Approved == 0)
+                {
+                    logger.LogError("Zero allowance detected for user {User}.", updated);
+                }
             }
         }
     }

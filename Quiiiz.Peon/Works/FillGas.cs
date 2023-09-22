@@ -30,32 +30,33 @@ internal class FillGas : IWork
 
         foreach (var user in repository.Content)
         {
-            if (user.Gas == default)
+            if (user.Gas == 0)
             {
-                var balance = await web3.Eth.GetBalance.SendRequestAsync(user.Address);
+                logger.LogInformation("User {UserId} with empty balance at address {Address} detected.", user.Id, user.Address);
 
-                if (balance.Value == default)
-                {
-                    logger.LogInformation("User {UserId} with empty balance at address {Address} detected.", user.Id, user.Address);
+                var hash = await web3.Eth.GetEtherTransferService().TransferEtherAsync(user.Address, options.Value.Amount);
 
-                    var hash = await web3.Eth.GetEtherTransferService().TransferEtherAsync(user.Address, options.Value.Amount);
+                logger.LogInformation("Sending transaction {Hash} with gas for user {User}.", hash, user);
 
-                    logger.LogInformation("Sending transaction {Hash}.", hash);
-
-                    hashes.Add(hash);
-                }
-
-                await repository.Update(user with { Gas = balance.Value });
+                hashes.Add(hash);
             }
         }
 
-        if (hashes.Count == 0) return;
+        if (hashes.Count == 0)
+        {
+            return;
+        }
 
         var receipts = await web3.Eth.Transactions.GetTransactionReceipt.SendBatchRequestAsync(hashes.ToArray());
 
         foreach (var receipt in receipts.Where(x => !x.Succeeded()))
         {
             logger.LogError("Transaction {Hash} failed.", receipt.TransactionHash);
+        }
+
+        foreach (var user in repository.Content)
+        {
+            await user.UpdateGas(repository, blockchain.Value);
         }
     }
 
