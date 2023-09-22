@@ -1,18 +1,14 @@
-﻿using System.Numerics;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nethereum.Contracts.Standards.ERC20.ContractDefinition;
-using Nethereum.HdWallet;
 using Nethereum.RPC.Eth.DTOs;
-using Nethereum.Web3;
 using Quiiiz.Peon.Configuration;
 using Quiiiz.Peon.Domain;
 using Quiiiz.Peon.Persistence;
-using RecurrentTasks;
 
 namespace Quiiiz.Peon.Works;
 
-internal class ApproveSpend : IRunnable
+internal class ApproveSpend : IWork
 {
     private readonly ILogger<ApproveSpend> logger;
     private readonly IOptions<Blockchain> blockchain;
@@ -27,7 +23,7 @@ internal class ApproveSpend : IRunnable
         this.options = options;
     }
 
-    public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
+    public async Task Work(CancellationToken cancellationToken)
     {
         foreach (var user in repository.Content)
         {
@@ -62,7 +58,7 @@ internal class ApproveSpend : IRunnable
         }
     }
 
-    public sealed record class Configuration : WorkConfigurationBase
+    public sealed record class Configuration
     {
         public long Amount { get; init; }
     }

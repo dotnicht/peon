@@ -18,12 +18,12 @@ public static class Extensions
             .AddTransient<IRepository<User>, MongoRepository<User>>();
 
     public static Web3 CreateUser(this Blockchain blockchain, int index)
-        => blockchain.Create(index, blockchain.Users);
+        => Create(blockchain, index, blockchain.Users);
 
     public static Web3 CreateMaster(this Blockchain blockchain)
-        => blockchain.Create(blockchain.MasterIndex, blockchain.Master);
+        => Create(blockchain, blockchain.MasterIndex, blockchain.Master);
 
-    private static Web3 Create(this Blockchain blockchain, int index, Blockchain.Credentials credentials)
+    private static Web3 Create(Blockchain blockchain, int index, Blockchain.Credentials credentials)
     {
         var web3 = new Web3(new Wallet(credentials.Seed, credentials.Password)
             .GetAccount(index, blockchain.ChainId), blockchain.Node.ToString());

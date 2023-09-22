@@ -4,11 +4,10 @@ using Nethereum.Contracts.Standards.ERC20.ContractDefinition;
 using Quiiiz.Peon.Configuration;
 using Quiiiz.Peon.Domain;
 using Quiiiz.Peon.Persistence;
-using RecurrentTasks;
 
 namespace Quiiiz.Peon.Works;
 
-internal class SyncNumbers : IRunnable
+internal class SyncNumbers : IWork
 {
     private readonly IRepository<User> repository;
     private readonly IOptions<Blockchain> blockchain;
@@ -23,7 +22,7 @@ internal class SyncNumbers : IRunnable
         this.options = options;
     }
 
-    public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
+    public async Task Work(CancellationToken cancellationToken)
     {
         var web3 = blockchain.Value.CreateMaster();
 
@@ -61,7 +60,7 @@ internal class SyncNumbers : IRunnable
         }
     }
 
-    public sealed record class Configuration : WorkConfigurationBase
+    public sealed record class Configuration
     {
         public required bool Gas { get; init; }
         public required bool Token { get; init; }

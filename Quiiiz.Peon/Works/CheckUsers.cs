@@ -4,11 +4,10 @@ using Nethereum.HdWallet;
 using Quiiiz.Peon.Configuration;
 using Quiiiz.Peon.Domain;
 using Quiiiz.Peon.Persistence;
-using RecurrentTasks;
 
 namespace Quiiiz.Peon.Works;
 
-internal class CheckUsers : IRunnable
+internal class CheckUsers : IWork
 {
     private readonly ILogger<CheckUsers> logger;
     private readonly IOptions<Blockchain> blockchain;
@@ -23,7 +22,7 @@ internal class CheckUsers : IRunnable
         this.repository = repository;
     }
 
-    public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
+    public async Task Work(CancellationToken cancellationToken)
     {
         var wallet = new Wallet(blockchain.Value.Users.Seed, blockchain.Value.Users.Password);
 
@@ -45,7 +44,7 @@ internal class CheckUsers : IRunnable
         }
     }
 
-    public sealed record class Configuration : WorkConfigurationBase 
+    public sealed record class Configuration 
     { 
         public int Offset { get; init; }
         public int UsersNumber { get; init; }

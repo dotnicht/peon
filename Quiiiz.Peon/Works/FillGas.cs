@@ -4,11 +4,10 @@ using Nethereum.RPC.Eth.DTOs;
 using Quiiiz.Peon.Configuration;
 using Quiiiz.Peon.Domain;
 using Quiiiz.Peon.Persistence;
-using RecurrentTasks;
 
 namespace Quiiiz.Peon.Works;
 
-internal class FillGas : IRunnable
+internal class FillGas : IWork
 {
     private readonly ILogger<FillGas> logger;
     private readonly IOptions<Blockchain> blockchain;
@@ -23,7 +22,7 @@ internal class FillGas : IRunnable
         this.options = options;
     }
 
-    public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
+    public async Task Work(CancellationToken cancellationToken)
     {
         var web3 = blockchain.Value.CreateMaster();
 
@@ -60,7 +59,7 @@ internal class FillGas : IRunnable
         }
     }
 
-    public sealed record class Configuration : WorkConfigurationBase
+    public sealed record class Configuration
     {
         public required long Amount { get; init; }
     }

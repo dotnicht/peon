@@ -3,11 +3,10 @@ using Microsoft.Extensions.Options;
 using Quiiiz.Peon.Configuration;
 using Quiiiz.Peon.Domain;
 using Quiiiz.Peon.Persistence;
-using RecurrentTasks;
 
 namespace Quiiiz.Peon.Works;
 
-internal class ExtractStuff : IRunnable
+internal class ExtractStuff : IWork
 {
     private readonly IRepository<User> repository;
     private readonly ILogger<ExtractStuff> logger;
@@ -22,7 +21,7 @@ internal class ExtractStuff : IRunnable
         this.options = options;
     }
 
-    public async Task RunAsync(ITask currentTask, IServiceProvider scopeServiceProvider, CancellationToken cancellationToken)
+    public async Task Work(CancellationToken cancellationToken)
     {
         foreach (var user in repository.Content)
         {
@@ -38,7 +37,7 @@ internal class ExtractStuff : IRunnable
         }
     }
 
-    public sealed record class Configuration : WorkConfigurationBase
+    public sealed record class Configuration
     {
         public required Asset Token { get; init; }
         public required Asset Gas { get; init; }
