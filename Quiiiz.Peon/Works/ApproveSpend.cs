@@ -46,6 +46,18 @@ internal class ApproveSpend : IRunnable
                 logger.LogInformation("Approve transaction {Hash} by user {User}.", receipt.TransactionHash, user);
 
                 if (!receipt.Succeeded()) logger.LogError("Approve transaction failed {Hash}.", receipt.TransactionHash);
+
+                var approve = await web3.Eth.ERC20
+                    .GetContractService(blockchain.Value.TokenAddress)
+                    .AllowanceQueryAsync(new AllowanceFunction
+                    {
+                        Spender = blockchain.Value.SpenderAddress,
+                        Owner = user.Address
+                    });
+
+                if (approve == 0) throw new InvalidOperationException("Zero allowance detected. ");
+
+                await repository.Update(user with { Approved = approve });
             }
         }
     }
