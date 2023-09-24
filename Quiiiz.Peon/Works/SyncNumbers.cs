@@ -21,7 +21,7 @@ internal class SyncNumbers : IWork
         this.options = options;
     }
 
-    public async Task Work(CancellationToken cancellationToken)
+    public async Task WorkWork(CancellationToken cancellationToken)
     {
         foreach (var user in repository.Content)
         {

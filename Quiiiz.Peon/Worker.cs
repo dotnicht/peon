@@ -29,11 +29,15 @@ public sealed class Worker : IHostedService
 
         foreach (var cmd in Environment.GetCommandLineArgs())
         {
-            if (!mapping.TryGetValue(cmd, out Type? value)) throw new InvalidOperationException($"Unknown command '{cmd}' supplied.");
+            if (!mapping.TryGetValue(cmd, out Type? value))
+            {
+                throw new InvalidOperationException($"Unknown command '{cmd}' supplied.");
+            }
+
             if (serviceProvider.GetRequiredService(value) is IWork work)
             {
                 logger.LogInformation("Running work {WorkType}.", value);
-                await work.Work(cancellationToken);
+                await work.WorkWork(cancellationToken);
             }
         }
 
