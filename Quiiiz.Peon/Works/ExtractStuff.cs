@@ -47,15 +47,33 @@ internal class ExtractStuff : IWork
                 }
                 else
                 {
-                    logger.LogError("Transfer transaction failed {Hash}.", receipt.TransactionHash);
+                    logger.LogError("Token transfer transaction failed {Hash}.", receipt.TransactionHash);
                 }
             }
 
             if (options.Value.Gas.Extract && user.Gas > 0)
             {
-                // TODO: transfer.
+                var fee = await web3.Eth
+                    .GetEtherTransferService()
+                    .SuggestFeeToTransferWholeBalanceInEtherAsync();
+                var amount = await web3.Eth
+                    .GetEtherTransferService()
+                    .CalculateTotalAmountToTransferWholeBalanceInEtherAsync(user.Address, fee.MaxFeePerGas!.Value);
+                var receipt = await web3.Eth
+                    .GetEtherTransferService()
+                    .TransferEtherAndWaitForReceiptAsync(options.Value.Gas.Address, amount);
 
-                logger.LogInformation("Extracted gas from user {User}.", await user.UpdateGas(repository, blockchain.Value));
+                if (receipt.Succeeded()) 
+                {
+                    logger.LogInformation("Extracted gas from user {User}. Transaction {Hash}.", 
+                        await user.UpdateGas(repository, blockchain.Value),
+                        receipt.TransactionHash);
+                }
+                else 
+                {
+                    logger.LogError("Gas transfer transaction failed {Hash}.", receipt.TransactionHash);
+
+                }
             }
         }
     }
