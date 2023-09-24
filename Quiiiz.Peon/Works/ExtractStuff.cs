@@ -23,7 +23,7 @@ internal class ExtractStuff : IWork
         this.options = options;
     }
 
-    public async Task WorkWork(CancellationToken cancellationToken)
+    public async Task Work(CancellationToken cancellationToken)
     {
         foreach (var user in repository.Content)
         {

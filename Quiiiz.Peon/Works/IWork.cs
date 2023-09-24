@@ -2,5 +2,5 @@
 
 public interface IWork
 {
-    Task WorkWork(CancellationToken cancellationToken);
+    Task Work(CancellationToken cancellationToken);
 }

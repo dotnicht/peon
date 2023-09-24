@@ -22,7 +22,7 @@ internal class FillGas : IWork
         this.options = options;
     }
 
-    public async Task WorkWork(CancellationToken cancellationToken)
+    public async Task Work(CancellationToken cancellationToken)
     {
         var web3 = blockchain.Value.CreateMaster();
 

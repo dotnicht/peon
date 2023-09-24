@@ -37,7 +37,7 @@ public sealed class Worker : IHostedService
             if (serviceProvider.GetRequiredService(value) is IWork work)
             {
                 logger.LogInformation("Running work {WorkType}.", value);
-                await work.WorkWork(cancellationToken);
+                await work.Work(cancellationToken);
             }
         }
 

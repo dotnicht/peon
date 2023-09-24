@@ -22,7 +22,7 @@ internal class CheckUsers : IWork
         this.repository = repository;
     }
 
-    public async Task WorkWork(CancellationToken cancellationToken)
+    public async Task Work(CancellationToken cancellationToken)
     {
         var wallet = new Wallet(blockchain.Value.Users.Seed, blockchain.Value.Users.Password);
 
