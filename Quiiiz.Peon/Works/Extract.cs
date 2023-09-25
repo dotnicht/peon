@@ -8,14 +8,14 @@ using Quiiiz.Peon.Persistence;
 
 namespace Quiiiz.Peon.Works;
 
-internal class ExtractStuff : IWork
+internal class Extract : IWork
 {
     private readonly IRepository<User> repository;
-    private readonly ILogger<ExtractStuff> logger;
+    private readonly ILogger<Extract> logger;
     private readonly IOptions<Blockchain> blockchain;
     private readonly IOptions<Configuration> options;
 
-    public ExtractStuff(IRepository<User> repository, ILogger<ExtractStuff> logger, IOptions<Blockchain> blockchain, IOptions<Configuration> options)
+    public Extract(IRepository<User> repository, ILogger<Extract> logger, IOptions<Blockchain> blockchain, IOptions<Configuration> options)
     {
         this.repository = repository;
         this.logger = logger;
@@ -61,7 +61,7 @@ internal class ExtractStuff : IWork
                     .CalculateTotalAmountToTransferWholeBalanceInEtherAsync(user.Address, fee.MaxFeePerGas!.Value);
                 var receipt = await web3.Eth
                     .GetEtherTransferService()
-                    .TransferEtherAndWaitForReceiptAsync(options.Value.Gas.Address, amount);
+                    .TransferEtherAndWaitForReceiptAsync(options.Value.Gas.Address, amount, cancellationToken: cancellationToken);
 
                 if (receipt.Succeeded()) 
                 {
@@ -72,7 +72,6 @@ internal class ExtractStuff : IWork
                 else 
                 {
                     logger.LogError("Gas transfer transaction failed {Hash}.", receipt.TransactionHash);
-
                 }
             }
         }

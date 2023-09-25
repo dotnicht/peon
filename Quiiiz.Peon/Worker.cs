@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Quiiiz.Peon.Works;
@@ -8,9 +9,9 @@ namespace Quiiiz.Peon;
 public sealed class Worker : IHostedService
 {
     private readonly ILogger<Worker> logger;
-    private readonly ServiceProvider serviceProvider;
+    private readonly IServiceProvider serviceProvider;
 
-    public Worker(ILogger<Worker> logger, ServiceProvider serviceProvider)
+    public Worker(ILogger<Worker> logger, IServiceProvider serviceProvider)
     {
         this.logger = logger;
         this.serviceProvider = serviceProvider;
@@ -18,14 +19,10 @@ public sealed class Worker : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        var mapping = new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase)
-        {
-            { "check", typeof(CheckUsers) },
-            { "fill", typeof(FillGas) },
-            { "approve", typeof(ApproveSpend) },
-            { "sync", typeof(SyncNumbers) },
-            { "extract", typeof(ExtractStuff) }
-        };
+        var mapping = Assembly.GetExecutingAssembly()
+            .GetTypes()
+            .Where(x => x.IsAssignableTo(typeof(IWork)))
+            .ToDictionary(x => x.Name, x => x, StringComparer.InvariantCultureIgnoreCase);
 
         foreach (var cmd in Environment.GetCommandLineArgs())
         {

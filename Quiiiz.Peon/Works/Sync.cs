@@ -6,14 +6,14 @@ using Quiiiz.Peon.Persistence;
 
 namespace Quiiiz.Peon.Works;
 
-internal class SyncNumbers : IWork
+internal class Sync : IWork
 {
     private readonly IRepository<User> repository;
     private readonly IOptions<Blockchain> blockchain;
     private readonly IOptions<Configuration> options;
-    private readonly ILogger<SyncNumbers> logger;
+    private readonly ILogger<Sync> logger;
 
-    public SyncNumbers(IRepository<User> repository, IOptions<Blockchain> blockchain, ILogger<SyncNumbers> logger, IOptions<Configuration> options)
+    public Sync(IRepository<User> repository, IOptions<Blockchain> blockchain, ILogger<Sync> logger, IOptions<Configuration> options)
     {
         this.repository = repository;
         this.blockchain = blockchain;

@@ -7,14 +7,14 @@ using Quiiiz.Peon.Persistence;
 
 namespace Quiiiz.Peon.Works;
 
-internal class CheckUsers : IWork
+internal class Check : IWork
 {
-    private readonly ILogger<CheckUsers> logger;
+    private readonly ILogger<Check> logger;
     private readonly IOptions<Blockchain> blockchain;
     private readonly IOptions<Configuration> options;
     private readonly IRepository<User> repository;
 
-    public CheckUsers(ILogger<CheckUsers> logger, IOptions<Blockchain> blockchain, IRepository<User> repository, IOptions<Configuration> options)
+    public Check(ILogger<Check> logger, IOptions<Blockchain> blockchain, IRepository<User> repository, IOptions<Configuration> options)
     {
         this.logger = logger;
         this.blockchain = blockchain;

@@ -8,14 +8,14 @@ using Quiiiz.Peon.Persistence;
 
 namespace Quiiiz.Peon.Works;
 
-internal class ApproveSpend : IWork
+internal class Allow : IWork
 {
-    private readonly ILogger<ApproveSpend> logger;
+    private readonly ILogger<Allow> logger;
     private readonly IOptions<Blockchain> blockchain;
     private readonly IOptions<Configuration> options;
     private readonly IRepository<User> repository;
 
-    public ApproveSpend(ILogger<ApproveSpend> logger, IOptions<Blockchain> blockchain, IRepository<User> repository, IOptions<Configuration> options)
+    public Allow(ILogger<Allow> logger, IOptions<Blockchain> blockchain, IRepository<User> repository, IOptions<Configuration> options)
     {
         this.logger = logger;
         this.blockchain = blockchain;

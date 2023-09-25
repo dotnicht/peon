@@ -12,19 +12,19 @@ builder.Services.Configure<Blockchain>(builder.Configuration.GetSection(nameof(B
 builder.Services.Configure<Database>(builder.Configuration.GetSection(nameof(Database)));
 
 var section = builder.Configuration.GetSection("Works");
-builder.Services.Configure<CheckUsers.Configuration>(section.GetSection(nameof(CheckUsers)));
-builder.Services.Configure<FillGas.Configuration>(section.GetSection(nameof(FillGas)));
-builder.Services.Configure<ApproveSpend.Configuration>(section.GetSection(nameof(ApproveSpend)));
-builder.Services.Configure<SyncNumbers.Configuration>(section.GetSection(nameof(SyncNumbers)));
-builder.Services.Configure<ExtractStuff.Configuration>(section.GetSection(nameof(ExtractStuff)));
+builder.Services.Configure<Check.Configuration>(section.GetSection(nameof(Check)));
+builder.Services.Configure<Fill.Configuration>(section.GetSection(nameof(Fill)));
+builder.Services.Configure<Allow.Configuration>(section.GetSection(nameof(Allow)));
+builder.Services.Configure<Sync.Configuration>(section.GetSection(nameof(Sync)));
+builder.Services.Configure<Extract.Configuration>(section.GetSection(nameof(Extract)));
 
 builder.Services.AddScoped<IRepository<User>, MongoRepository<User>>();
 
-builder.Services.AddTransient<IWork, CheckUsers>();
-builder.Services.AddTransient<IWork, FillGas>();
-builder.Services.AddTransient<IWork, ApproveSpend>();
-builder.Services.AddTransient<IWork, SyncNumbers>();
-builder.Services.AddTransient<IWork, ExtractStuff>();
+builder.Services.AddTransient<IWork, Check>();
+builder.Services.AddTransient<IWork, Fill>();
+builder.Services.AddTransient<IWork, Allow>();
+builder.Services.AddTransient<IWork, Sync>();
+builder.Services.AddTransient<IWork, Extract>();
 
 builder.Services.AddHostedService<Worker>();
 

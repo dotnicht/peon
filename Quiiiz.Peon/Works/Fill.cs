@@ -7,14 +7,14 @@ using Quiiiz.Peon.Persistence;
 
 namespace Quiiiz.Peon.Works;
 
-internal class FillGas : IWork
+internal class Fill : IWork
 {
-    private readonly ILogger<FillGas> logger;
+    private readonly ILogger<Fill> logger;
     private readonly IOptions<Blockchain> blockchain;
     private readonly IOptions<Configuration> options;
     private readonly IRepository<User> repository;
 
-    public FillGas(ILogger<FillGas> logger, IOptions<Blockchain> blockchain, IRepository<User> repository, IOptions<Configuration> options)
+    public Fill(ILogger<Fill> logger, IOptions<Blockchain> blockchain, IRepository<User> repository, IOptions<Configuration> options)
     {
         this.logger = logger;
         this.blockchain = blockchain;
