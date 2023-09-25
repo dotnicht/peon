@@ -41,7 +41,7 @@ internal class Extract : IWork
 
                 if (receipt.Succeeded())
                 {
-                    logger.LogInformation("Extracted token from user {User}. Transaction {Hash}.", 
+                    logger.LogInformation("Extracted token from user {User}. Transaction {Hash}.",
                         await user.UpdateToken(repository, blockchain.Value),
                         receipt.TransactionHash);
                 }
@@ -63,13 +63,13 @@ internal class Extract : IWork
                     .GetEtherTransferService()
                     .TransferEtherAndWaitForReceiptAsync(options.Value.Gas.Address, amount, cancellationToken: cancellationToken);
 
-                if (receipt.Succeeded()) 
+                if (receipt.Succeeded())
                 {
-                    logger.LogInformation("Extracted gas from user {User}. Transaction {Hash}.", 
+                    logger.LogInformation("Extracted gas from user {User}. Transaction {Hash}.",
                         await user.UpdateGas(repository, blockchain.Value),
                         receipt.TransactionHash);
                 }
-                else 
+                else
                 {
                     logger.LogError("Gas transfer transaction failed {Hash}.", receipt.TransactionHash);
                 }

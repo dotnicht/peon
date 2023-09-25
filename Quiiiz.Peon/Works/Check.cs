@@ -44,8 +44,8 @@ internal class Check : IWork
         }
     }
 
-    public sealed record class Configuration 
-    { 
+    public sealed record class Configuration
+    {
         public int Offset { get; init; }
         public int UsersNumber { get; init; }
     }

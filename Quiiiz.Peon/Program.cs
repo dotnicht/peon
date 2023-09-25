@@ -28,7 +28,7 @@ builder.Services.AddScoped<IRepository<User>, MongoRepository<User>>();
 foreach (var work in mapping)
 {
     mi.MakeGenericMethod(work.Value.GetNestedType("Configuration")!)
-        .Invoke(null , new object[] { builder.Services, section.GetSection(work.Key) });
+        .Invoke(null, new object[] { builder.Services, section.GetSection(work.Key) });
     builder.Services.AddTransient(typeof(IWork), work.Value);
 }
 
