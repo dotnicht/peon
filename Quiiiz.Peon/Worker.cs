@@ -19,10 +19,7 @@ public sealed class Worker : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        var mapping = Assembly.GetExecutingAssembly()
-            .GetTypes()
-            .Where(x => x.IsAssignableTo(typeof(IWork)))
-            .ToDictionary(x => x.Name, x => x, StringComparer.InvariantCultureIgnoreCase);
+        var mapping = serviceProvider.GetRequiredService<IDictionary<string, Type>>();
 
         foreach (var cmd in Environment.GetCommandLineArgs())
         {
@@ -33,6 +30,7 @@ public sealed class Worker : IHostedService
 
             if (serviceProvider.GetRequiredService(value) is IWork work)
             {
+                using var scope = serviceProvider.CreateScope();
                 logger.LogInformation("Running work {WorkType}.", value);
                 await work.Work(cancellationToken);
             }
