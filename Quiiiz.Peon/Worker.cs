@@ -20,7 +20,7 @@ public sealed class Worker : IHostedService
     {
         var mapping = serviceProvider.GetRequiredService<IDictionary<string, Type>>();
 
-        foreach (var cmd in Environment.GetCommandLineArgs())
+        foreach (var cmd in Environment.GetCommandLineArgs().Skip(1))
         {
             if (!mapping.TryGetValue(cmd, out Type? value))
             {

@@ -38,7 +38,7 @@ public static class Extensions
             mi.MakeGenericMethod(work.Value.GetNestedType("Configuration")!)
                 .Invoke(null, new object[] { services, section.GetSection(work.Key) });
 
-            services.AddTransient(typeof(IWork), work.Value);
+            services.AddTransient(work.Value);
         }
 
         return services.AddSingleton<IDictionary<string, Type>>(mapping);
