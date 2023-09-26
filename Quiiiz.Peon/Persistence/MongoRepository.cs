@@ -23,9 +23,7 @@ internal sealed class MongoRepository<TItem> : IRepository<TItem> where TItem : 
     }
 
     public async Task Add(TItem item) => await collection.InsertOneAsync(item);
-
     public async Task Update(TItem item) => await collection.ReplaceOneAsync(x => x.Id == item.Id, item);
-
     public async Task Remove(TItem item) => await collection.DeleteOneAsync(x => x.Id == item.Id);
 
     private sealed class BigIntegerSerializer : SerializerBase<BigInteger>

@@ -44,6 +44,7 @@ public static class Extensions
         return services.AddSingleton<IDictionary<string, Type>>(mapping);
     }
 
+    // TODO: refactor to use blockchain persistence.
     public static async Task<User> UpdateGas(this User user, IRepository<User> repository, Blockchain blockchain)
     {
         var updated = user with
