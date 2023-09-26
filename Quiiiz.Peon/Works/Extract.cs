@@ -25,7 +25,7 @@ internal class Extract : IWork
 
     public async Task Work(CancellationToken cancellationToken)
     {
-        foreach (var user in repository.Content)
+        foreach (var user in repository.Content.OrderBy(x => x.Id).Take(20))
         {
             var web3 = blockchain.Value.CreateUser(user);
 

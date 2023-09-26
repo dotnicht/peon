@@ -1,0 +1,8 @@
+{
+    "profiles": {
+        "Quiiiz.Peon": {
+            "commandName": "Project",
+            "commandLineArgs": "extract"
+        }
+    }
+}
