@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Nethereum.Contracts.Standards.ERC20.ContractDefinition;
 using Nethereum.HdWallet;
@@ -7,6 +9,7 @@ using Quiiiz.Peon.Configuration;
 using Quiiiz.Peon.Domain;
 using Quiiiz.Peon.Persistence;
 using Quiiiz.Peon.Provider;
+using Quiiiz.Peon.Works;
 
 namespace Quiiiz.Peon;
 
@@ -17,6 +20,29 @@ public static class Extensions
             .AddSingleton(Options.Create(new Database { Connection = connection, Name = database }))
             .AddTransient<IAddressProvider, Address>()
             .AddTransient<IRepository<User>, MongoRepository<User>>();
+
+    public static IServiceCollection AddWorks(this IServiceCollection services, IConfiguration configuration)
+    {
+        var mapping = Assembly.GetExecutingAssembly()
+            .GetTypes()
+            .Where(x => x.IsAssignableTo(typeof(IWork)) && !x.IsInterface && !x.IsAbstract)
+            .ToDictionary(x => x.Name, x => x, StringComparer.InvariantCultureIgnoreCase);
+
+        var section = configuration.GetSection("Works");
+
+        var mi = typeof(OptionsConfigurationServiceCollectionExtensions)
+            .GetMethod(nameof(OptionsConfigurationServiceCollectionExtensions.Configure), new[] { typeof(IServiceCollection), typeof(IConfiguration) })!;
+
+        foreach (var work in mapping)
+        {
+            mi.MakeGenericMethod(work.Value.GetNestedType("Configuration")!)
+                .Invoke(null, new object[] { services, section.GetSection(work.Key) });
+
+            services.AddTransient(typeof(IWork), work.Value);
+        }
+
+        return services.AddSingleton<IDictionary<string, Type>>(mapping);
+    }
 
     public static async Task<User> UpdateGas(this User user, IRepository<User> repository, Blockchain blockchain)
     {
