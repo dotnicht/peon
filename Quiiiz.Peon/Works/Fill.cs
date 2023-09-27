@@ -62,6 +62,6 @@ internal class Fill : IWork
 
     public sealed record class Configuration
     {
-        public required long Amount { get; init; }
+        public required decimal Amount { get; init; }
     }
 }

@@ -12,8 +12,7 @@ builder.Services.Configure<Database>(builder.Configuration.GetSection(nameof(Dat
 
 builder.Services.AddScoped<IRepository<User>, MongoRepository<User>>();
 builder.Services.AddHostedService<Worker>();
+
 builder.Services.AddWorks(builder.Configuration);
 
-var host = builder.Build();
-var source = new CancellationTokenSource();
-await host.RunAsync(source.Token);
+await builder.Build().RunAsync();

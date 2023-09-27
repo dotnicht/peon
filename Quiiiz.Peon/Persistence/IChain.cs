@@ -4,7 +4,7 @@ namespace Quiiiz.Peon.Persistence;
 
 public interface IChain
 {
-    Task FillGas(string[] addresses, BigInteger amount);
+    Task FillGas(string[] addresses, decimal amount);
     Task<string> ExtractGas(long index, string address);
     Task<string> ExtractToken(long index, string address);
     Task<string> ApproveSpend(long index, string address, BigInteger amount);
