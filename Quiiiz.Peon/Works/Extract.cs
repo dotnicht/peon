@@ -31,11 +31,15 @@ internal class Extract : IWork
 
             if (options.Value.Token.Extract && user.Token > 0)
             {
-                var balance = await web3.Eth.ERC20
-                    .GetContractService(blockchain.Value.TokenAddress)
-                    .BalanceOfQueryAsync(web3.Eth.TransactionManager.Account.Address);
-
-                var gas = await web3.Eth.GetBalance.SendRequestAsync(web3.Eth.TransactionManager.Account.Address);
+                if (user.Gas == 0)
+                {
+                    var gas = await web3.Eth.GetBalance.SendRequestAsync(web3.Eth.TransactionManager.Account.Address);
+                    if (gas.Value == 0)
+                    {
+                        logger.LogError("Couldn't extract token from user {UserId} due to lack of gas.", user.Id);
+                        continue;
+                    }
+                }
 
                 var receipt = await web3.Eth.ERC20
                     .GetContractService(blockchain.Value.TokenAddress)
