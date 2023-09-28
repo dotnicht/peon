@@ -49,6 +49,7 @@ internal class Fill : IWork
 
         var receipts = await web3.Eth.Transactions.GetTransactionReceipt.SendBatchRequestAsync(hashes.ToArray());
 
+        // TODO: fix null receipts.
         logger.LogWarning("{Number} null receipts.", receipts.Count(x => x == null));
 
         foreach (var receipt in receipts.Where(x => x?.Succeeded() == false))

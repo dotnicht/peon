@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Nethereum.Contracts.Standards.ERC20.ContractDefinition;
 using Nethereum.HdWallet;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Web3;
@@ -39,7 +40,6 @@ internal class EthereumChain : IChain
     {
         var web3 = User(index);
 
-        // TODO: recheck gas price.
         var amount = await web3.Eth
             .GetEtherTransferService()
             .CalculateTotalAmountToTransferWholeBalanceInEtherAsync(web3.TransactionManager.Account.Address, await web3.Eth.GasPrice.SendRequestAsync());
@@ -60,9 +60,31 @@ internal class EthereumChain : IChain
         return receipt.TransactionHash;
     }
 
-    public Task<string> ExtractToken(long index, string address)
+    public async Task<string> ExtractToken(long index, string address, bool prefill)
     {
-        throw new NotImplementedException();
+        var web3 = User(index);
+
+        var gas = await web3.Eth.GetBalance.SendRequestAsync(web3.Eth.TransactionManager.Account.Address);
+
+        if (gas.Value == 0 && prefill)
+        {
+            await Master().Eth.GetEtherTransferService().TransferEtherAndWaitForReceiptAsync(address, 1m); // TODO: remove hardcode.
+        }
+
+        var receipt = await web3.Eth.ERC20
+            .GetContractService(options.Value.TokenAddress)
+            .TransferRequestAndWaitForReceiptAsync(new TransferFunction
+            {
+                Value = await web3.Eth.GetBalance.SendRequestAsync(web3.TransactionManager.Account.Address),
+                To = address
+            });
+
+        if (!receipt.Succeeded())
+        {
+            logger.LogError("Token transfer transaction failed {Hash}.", receipt.TransactionHash);
+        }
+
+        return receipt.TransactionHash;
     }
 
     public async Task FillGas(string[] addresses, decimal amount)
@@ -86,19 +108,26 @@ internal class EthereumChain : IChain
         }
     }
 
-    public Task<BigInteger> GetAllowance(long index, string address)
+    public async Task<BigInteger> GetAllowance(long index, string address)
     {
-        throw new NotImplementedException();
+        var web3 = User(index);
+        return await web3.Eth.ERC20
+                .GetContractService(options.Value.TokenAddress)
+                .AllowanceQueryAsync(new AllowanceFunction { Spender = options.Value.SpenderAddress, Owner = web3.TransactionManager.Account.Address });
     }
 
-    public Task<BigInteger> GetGasBalance(long index)
+    public async Task<BigInteger> GetGasBalance(long index)
     {
-        throw new NotImplementedException();
+        var web3 = User(index);
+        return await web3.Eth.GetBalance.SendRequestAsync(web3.TransactionManager.Account.Address);
     }
 
     public Task<BigInteger> GetTokenBalance(long index)
     {
-        throw new NotImplementedException();
+        var web3 = User(index);
+        return web3.Eth.ERC20
+            .GetContractService(options.Value.TokenAddress)
+            .BalanceOfQueryAsync(new BalanceOfFunction { Owner = web3.TransactionManager.Account.Address });
     }
 
     private Web3 User(long index)
