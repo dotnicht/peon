@@ -35,10 +35,8 @@ internal class Extract : IWork
                     .GetContractService(blockchain.Value.TokenAddress)
                     .TransferRequestAndWaitForReceiptAsync(new TransferFunction
                     {
-                        AmountToSend = user.Token,
-                        To = options.Value.Token.Address,
-                        GasPrice = await web3.Eth.GasPrice.SendRequestAsync(),
-                        Gas = 210000
+                        Value = user.Token,
+                        To = options.Value.Token.Address
                     }, cancellationToken);
 
                 if (receipt.Succeeded())
@@ -55,9 +53,12 @@ internal class Extract : IWork
 
             if (options.Value.Gas.Extract && user.Gas > 0)
             {
+                var gas = await web3.Eth.GasPrice.SendRequestAsync();
+
                 var amount = await web3.Eth
                     .GetEtherTransferService()
-                    .CalculateTotalAmountToTransferWholeBalanceInEtherAsync(user.Address, await web3.Eth.GasPrice.SendRequestAsync());
+                    .CalculateTotalAmountToTransferWholeBalanceInEtherAsync(user.Address, gas);
+
                 var receipt = await web3.Eth
                     .GetEtherTransferService()
                     .TransferEtherAndWaitForReceiptAsync(options.Value.Gas.Address, amount, cancellationToken: cancellationToken);

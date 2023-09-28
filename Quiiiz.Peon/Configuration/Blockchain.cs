@@ -1,6 +1,6 @@
 ﻿namespace Quiiiz.Peon.Configuration;
 
-public record Blockchain
+public sealed record class Blockchain
 {
     public required Uri Node { get; init; }
     public required long ChainId { get; init; }

@@ -1,8 +1,16 @@
 {
-    "profiles": {
-        "Quiiiz.Peon": {
-            "commandName": "Project",
-            "commandLineArgs": "extract"
-        }
+  "profiles": {
+    "Extract": {
+      "commandName": "Project",
+      "commandLineArgs": "extract"
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    },
+    "Check, Fill, Allow, Sync": {
+      "commandName": "Project",
+      "commandLineArgs": "check fill allow sync"
     }
+  }
 }

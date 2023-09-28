@@ -23,15 +23,19 @@ public static class Extensions
 
     public static IServiceCollection AddWorks(this IServiceCollection services, IConfiguration configuration)
     {
+        var section = configuration.GetSection("Works");
+        services.Configure<Configuration.Works>(section);
+
+        var mi = typeof(OptionsConfigurationServiceCollectionExtensions)
+            .GetMethod(
+                nameof(OptionsConfigurationServiceCollectionExtensions.Configure), 
+                new[] { typeof(IServiceCollection), typeof(IConfiguration) })!;
+
         var mapping = Assembly.GetExecutingAssembly()
             .GetTypes()
             .Where(x => x.IsAssignableTo(typeof(IWork)) && !x.IsInterface && !x.IsAbstract)
             .ToDictionary(x => x.Name, x => x, StringComparer.InvariantCultureIgnoreCase);
 
-        var section = configuration.GetSection("Works");
-
-        var mi = typeof(OptionsConfigurationServiceCollectionExtensions)
-            .GetMethod(nameof(OptionsConfigurationServiceCollectionExtensions.Configure), new[] { typeof(IServiceCollection), typeof(IConfiguration) })!;
 
         foreach (var work in mapping)
         {
