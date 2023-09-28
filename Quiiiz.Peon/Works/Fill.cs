@@ -49,7 +49,9 @@ internal class Fill : IWork
 
         var receipts = await web3.Eth.Transactions.GetTransactionReceipt.SendBatchRequestAsync(hashes.ToArray());
 
-        foreach (var receipt in receipts.Where(x => !x.Succeeded()))
+        logger.LogWarning("{Number} null receipts.", receipts.Count(x => x == null));
+
+        foreach (var receipt in receipts.Where(x => x?.Succeeded() == false))
         {
             logger.LogError("Transaction {Hash} failed.", receipt.TransactionHash);
         }

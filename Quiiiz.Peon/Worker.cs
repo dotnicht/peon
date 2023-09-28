@@ -34,6 +34,8 @@ public sealed class Worker : IHostedService
 
         do
         {
+            var timer = Stopwatch.StartNew();
+
             foreach (var cmd in commands)
             {
                 if (!mapping.TryGetValue(cmd, out Type? value))
@@ -60,7 +62,8 @@ public sealed class Worker : IHostedService
                 }
             }
 
-            logger.LogInformation("All works executed.");
+            logger.LogInformation("All works execution finished in {Elapsed}. Timeout {Timeout}.", timer.Elapsed, options.Value.Timeout);
+            await Task.Delay(options.Value.Timeout, cancellationToken);
 
         } while (options.Value.Loop && !cancellationToken.IsCancellationRequested);
     }

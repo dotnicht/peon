@@ -1,16 +1,20 @@
 {
     "profiles": {
-        "Extract": {
-            "commandName": "Project",
-            "commandLineArgs": "extract"
-        },
         "Sync": {
             "commandName": "Project",
             "commandLineArgs": "sync"
         },
+        "Extract, Sync": {
+            "commandName": "Project",
+            "commandLineArgs": "extract sync"
+        },
         "Check, Fill, Allow, Sync": {
             "commandName": "Project",
             "commandLineArgs": "check fill allow sync"
+        },
+        "Check, Sync, Fill, Allow, Sync": {
+            "commandName": "Project",
+            "commandLineArgs": "check sync fill allow sync"
         }
     }
 }

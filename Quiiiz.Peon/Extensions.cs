@@ -28,7 +28,7 @@ public static class Extensions
 
         var mi = typeof(OptionsConfigurationServiceCollectionExtensions)
             .GetMethod(
-                nameof(OptionsConfigurationServiceCollectionExtensions.Configure), 
+                nameof(OptionsConfigurationServiceCollectionExtensions.Configure),
                 new[] { typeof(IServiceCollection), typeof(IConfiguration) })!;
 
         var mapping = Assembly.GetExecutingAssembly()
@@ -40,8 +40,13 @@ public static class Extensions
         foreach (var work in mapping)
         {
             services.AddTransient(work.Value);
-            mi.MakeGenericMethod(work.Value.GetNestedType("Configuration")!)
-                .Invoke(null, new object[] { services, section.GetSection(work.Key) });
+
+            var cfg = work.Value.GetNestedType("Configuration");
+
+            if (cfg != null)
+            {
+                mi.MakeGenericMethod(cfg).Invoke(null, new object[] { services, section.GetSection(work.Key) });
+            }
         }
 
         return services.AddSingleton<IDictionary<string, Type>>(mapping);
