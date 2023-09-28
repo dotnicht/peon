@@ -1,16 +1,16 @@
 {
-  "profiles": {
-    "Extract": {
-      "commandName": "Project",
-      "commandLineArgs": "extract"
-    },
-    "WSL": {
-      "commandName": "WSL2",
-      "distributionName": ""
-    },
-    "Check, Fill, Allow, Sync": {
-      "commandName": "Project",
-      "commandLineArgs": "check fill allow sync"
+    "profiles": {
+        "Extract": {
+            "commandName": "Project",
+            "commandLineArgs": "extract"
+        },
+        "Sync": {
+            "commandName": "Project",
+            "commandLineArgs": "sync"
+        },
+        "Check, Fill, Allow, Sync": {
+            "commandName": "Project",
+            "commandLineArgs": "check fill allow sync"
+        }
     }
-  }
 }

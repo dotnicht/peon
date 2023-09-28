@@ -25,12 +25,18 @@ internal class Extract : IWork
 
     public async Task Work(CancellationToken cancellationToken)
     {
-        foreach (var user in repository.Content.OrderBy(x => x.Id).Take(20))
+        foreach (var user in repository.Content.OrderBy(x => x.Id))
         {
             var web3 = blockchain.Value.CreateUser(user);
 
             if (options.Value.Token.Extract && user.Token > 0)
             {
+                var balance = await web3.Eth.ERC20
+                    .GetContractService(blockchain.Value.TokenAddress)
+                    .BalanceOfQueryAsync(web3.Eth.TransactionManager.Account.Address);
+
+                var gas = await web3.Eth.GetBalance.SendRequestAsync(web3.Eth.TransactionManager.Account.Address);
+
                 var receipt = await web3.Eth.ERC20
                     .GetContractService(blockchain.Value.TokenAddress)
                     .TransferRequestAndWaitForReceiptAsync(new TransferFunction

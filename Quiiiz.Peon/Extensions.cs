@@ -39,10 +39,9 @@ public static class Extensions
 
         foreach (var work in mapping)
         {
+            services.AddTransient(work.Value);
             mi.MakeGenericMethod(work.Value.GetNestedType("Configuration")!)
                 .Invoke(null, new object[] { services, section.GetSection(work.Key) });
-
-            services.AddTransient(work.Value);
         }
 
         return services.AddSingleton<IDictionary<string, Type>>(mapping);
