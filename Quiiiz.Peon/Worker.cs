@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -23,10 +24,9 @@ public sealed class Worker : IHostedService
     {
         var mapping = serviceProvider.GetRequiredService<IDictionary<string, Type>>();
 
-        if (Environment.GetCommandLineArgs().Length < 2) 
+        if (Environment.GetCommandLineArgs().Length < 2)
         {
-            logger.LogWarning("No commands were passed as command line arguments. Available commands: {CommandList}.",
-                string.Join(", ", mapping.Keys));
+            logger.LogWarning("No commands were passed as command line arguments. Available commands: {CommandList}.", string.Join(", ", mapping.Keys));
             return;
         }
 
@@ -45,15 +45,16 @@ public sealed class Worker : IHostedService
                 {
                     using var scope = serviceProvider.CreateScope();
                     logger.LogInformation("Running work {WorkType}.", value);
+                    var sw = Stopwatch.StartNew();
 
                     try
                     {
                         await work.Work(cancellationToken);
+                        logger.LogInformation("Execution {WorkType} finished in {Elapsed}.", value, sw.Elapsed);
                     }
                     catch (Exception ex)
                     {
-                        logger.LogError(ex, "An error occurred while executing {WorkType}.", value);
-
+                        logger.LogError(ex, "An error occurred while executing {WorkType} at {Elapsed}.", value, sw.Elapsed);
                         if (options.Value.Exceptions) throw;
                     }
                 }
