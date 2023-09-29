@@ -13,19 +13,19 @@ internal class Fill : IWork
     private readonly IOptions<Blockchain> blockchain;
     private readonly IOptions<Configuration> options;
     private readonly IRepository<User> repository;
+    private readonly IChain chain;
 
-    public Fill(ILogger<Fill> logger, IOptions<Blockchain> blockchain, IRepository<User> repository, IOptions<Configuration> options)
+    public Fill(ILogger<Fill> logger, IOptions<Blockchain> blockchain, IRepository<User> repository, IOptions<Configuration> options, IChain chain)
     {
         this.logger = logger;
         this.blockchain = blockchain;
         this.repository = repository;
         this.options = options;
+        this.chain = chain;
     }
 
     public async Task Work(CancellationToken cancellationToken)
     {
-        var web3 = blockchain.Value.CreateMaster();
-
         var hashes = new List<string>();
 
         foreach (var user in repository.Content)

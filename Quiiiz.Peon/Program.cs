@@ -11,6 +11,7 @@ builder.Services.Configure<Blockchain>(builder.Configuration.GetSection(nameof(B
 builder.Services.Configure<Database>(builder.Configuration.GetSection(nameof(Database)));
 
 builder.Services.AddScoped<IRepository<User>, MongoRepository<User>>();
+builder.Services.AddSingleton<IChain, EthereumChain>();
 builder.Services.AddHostedService<Worker>();
 
 builder.Services.AddWorks(builder.Configuration);

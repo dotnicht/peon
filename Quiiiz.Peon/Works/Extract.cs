@@ -14,13 +14,15 @@ internal class Extract : IWork
     private readonly ILogger<Extract> logger;
     private readonly IOptions<Blockchain> blockchain;
     private readonly IOptions<Configuration> options;
+    private readonly IChain chain;
 
-    public Extract(IRepository<User> repository, ILogger<Extract> logger, IOptions<Blockchain> blockchain, IOptions<Configuration> options)
+    public Extract(IRepository<User> repository, ILogger<Extract> logger, IOptions<Blockchain> blockchain, IOptions<Configuration> options, IChain chain)
     {
         this.repository = repository;
         this.logger = logger;
         this.blockchain = blockchain;
         this.options = options;
+        this.chain = chain;
     }
 
     public async Task Work(CancellationToken cancellationToken)

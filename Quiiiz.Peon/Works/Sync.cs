@@ -12,13 +12,15 @@ internal class Sync : IWork
     private readonly IOptions<Blockchain> blockchain;
     private readonly IOptions<Configuration> options;
     private readonly ILogger<Sync> logger;
+    private readonly IChain chain;
 
-    public Sync(IRepository<User> repository, IOptions<Blockchain> blockchain, ILogger<Sync> logger, IOptions<Configuration> options)
+    public Sync(IRepository<User> repository, IOptions<Blockchain> blockchain, ILogger<Sync> logger, IOptions<Configuration> options, IChain chain)
     {
         this.repository = repository;
         this.blockchain = blockchain;
         this.logger = logger;
         this.options = options;
+        this.chain = chain;
     }
 
     public async Task Work(CancellationToken cancellationToken)
@@ -27,17 +29,32 @@ internal class Sync : IWork
         {
             if (options.Value.Gas)
             {
-                logger.LogInformation("Updating gas amount for user {User}.", await user.UpdateGas(repository, blockchain.Value));
+                var gas = await chain.GetGasBalance(user.Id);
+                if (gas != user.Gas)
+                {
+                    await repository.Update(user with { Gas = gas, Updated = DateTime.UtcNow });
+                    logger.LogInformation("Updated gas amount {Amount} for user {User}.", gas, user);
+                }
             }
 
             if (options.Value.Token)
             {
-                logger.LogInformation("Updating token amount for user {User}.", await user.UpdateToken(repository, blockchain.Value));
+                var token = await chain.GetTokenBalance(user.Id);
+                if (token != user.Token)
+                {
+                    await repository.Update(user with { Token = token, Updated = DateTime.UtcNow });
+                    logger.LogInformation("Updated token amount {Amount} for user {User}.", token, user);
+                }
             }
 
             if (options.Value.Approved)
             {
-                logger.LogInformation("Updating approved amount for user {User}.", await user.UpdateApproved(repository, blockchain.Value));
+                var approved = await chain.GetAllowance(user.Id, blockchain.Value.SpenderAddress);
+                if (approved != user.Approved)
+                {
+                    await repository.Update(user with { Approved = approved, Updated = DateTime.UtcNow });
+                    logger.LogInformation("Updated approved amount {Amount} for user {User}.", approved, user);
+                }
             }
         }
     }

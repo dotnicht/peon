@@ -63,14 +63,6 @@ internal class EthereumChain : IChain
     public async Task<string> ExtractToken(long index, string address, bool prefill)
     {
         var web3 = User(index);
-
-        var gas = await web3.Eth.GetBalance.SendRequestAsync(web3.Eth.TransactionManager.Account.Address);
-
-        if (gas.Value == 0 && prefill)
-        {
-            await Master().Eth.GetEtherTransferService().TransferEtherAndWaitForReceiptAsync(address, 1m); // TODO: remove hardcode.
-        }
-
         var receipt = await web3.Eth.ERC20
             .GetContractService(options.Value.TokenAddress)
             .TransferRequestAndWaitForReceiptAsync(new TransferFunction
@@ -91,7 +83,6 @@ internal class EthereumChain : IChain
     {
         var hashes = new List<string>();
         var web3 = Master();
-
         foreach (var address in addresses)
         {
             hashes.Add(await web3.Eth.GetEtherTransferService().TransferEtherAsync(address, amount));
@@ -100,7 +91,6 @@ internal class EthereumChain : IChain
         if (hashes.Count != 0)
         {
             var receipts = await web3.Eth.Transactions.GetTransactionReceipt.SendBatchRequestAsync(hashes.ToArray());
-
             foreach (var receipt in receipts.Where(x => !x.Succeeded()))
             {
                 logger.LogError("Transaction {Hash} failed.", receipt.TransactionHash);

@@ -36,7 +36,6 @@ public static class Extensions
             .Where(x => x.IsAssignableTo(typeof(IWork)) && !x.IsInterface && !x.IsAbstract)
             .ToDictionary(x => x.Name, x => x, StringComparer.InvariantCultureIgnoreCase);
 
-
         foreach (var work in mapping)
         {
             services.AddTransient(work.Value);
