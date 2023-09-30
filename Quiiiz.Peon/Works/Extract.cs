@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Nethereum.Contracts.Standards.ERC20.ContractDefinition;
-using Nethereum.RPC.Eth.DTOs;
 using Quiiiz.Peon.Configuration;
 using Quiiiz.Peon.Domain;
 using Quiiiz.Peon.Persistence;
@@ -33,57 +31,23 @@ internal class Extract : IWork
 
             if (options.Value.Token.Extract && user.Token > 0)
             {
-                if (user.Gas == 0)
+                await chain.ExtractToken(user.Id, options.Value.Token.Address, false);
+                if (options.Value.Token.Refresh)
                 {
-                    var gas = await web3.Eth.GetBalance.SendRequestAsync(web3.Eth.TransactionManager.Account.Address);
-                    if (gas.Value == 0)
-                    {
-                        logger.LogError("Couldn't extract token from user {UserId} due to lack of gas.", user.Id);
-                        continue;
-                    }
-                }
-
-                var receipt = await web3.Eth.ERC20
-                    .GetContractService(blockchain.Value.TokenAddress)
-                    .TransferRequestAndWaitForReceiptAsync(new TransferFunction
-                    {
-                        Value = user.Token,
-                        To = options.Value.Token.Address
-                    }, cancellationToken);
-
-                if (receipt.Succeeded())
-                {
-                    logger.LogInformation("Extracted token from user {User}. Transaction {Hash}.",
-                        await user.UpdateToken(repository, blockchain.Value),
-                        receipt.TransactionHash);
-                }
-                else
-                {
-                    logger.LogError("Token transfer transaction failed {Hash}.", receipt.TransactionHash);
+                    var token = await chain.GetGasBalance(user.Id);
+                    await repository.Update(user with { Token = token, Updated = DateTime.UtcNow });
+                    logger.LogInformation("User {User} updated with token {Token}.", user, token);
                 }
             }
 
             if (options.Value.Gas.Extract && user.Gas > 0)
             {
-                var gas = await web3.Eth.GasPrice.SendRequestAsync();
-
-                var amount = await web3.Eth
-                    .GetEtherTransferService()
-                    .CalculateTotalAmountToTransferWholeBalanceInEtherAsync(user.Address, gas);
-
-                var receipt = await web3.Eth
-                    .GetEtherTransferService()
-                    .TransferEtherAndWaitForReceiptAsync(options.Value.Gas.Address, amount, cancellationToken: cancellationToken);
-
-                if (receipt.Succeeded())
+                await chain.ExtractGas(user.Id, options.Value.Gas.Address);
+                if (options.Value.Gas.Refresh)
                 {
-                    logger.LogInformation("Extracted gas from user {User}. Transaction {Hash}.",
-                        await user.UpdateGas(repository, blockchain.Value),
-                        receipt.TransactionHash);
-                }
-                else
-                {
-                    logger.LogError("Gas transfer transaction failed {Hash}.", receipt.TransactionHash);
+                    var gas = await chain.GetGasBalance(user.Id);
+                    await repository.Update(user with { Gas = gas, Updated = DateTime.UtcNow });
+                    logger.LogInformation("User {User} updated with gas {Gas}.", user, gas);
                 }
             }
         }
@@ -98,6 +62,7 @@ internal class Extract : IWork
         {
             public required bool Extract { get; init; }
             public required string Address { get; init; }
+            public required bool Refresh { get; init; }
         }
     }
 }

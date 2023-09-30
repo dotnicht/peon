@@ -20,6 +20,8 @@ internal class EthereumChain : IChain
         this.options = options;
     }
 
+    public async Task<string> GenerateAddress(long index) => await Task.FromResult(User(index).TransactionManager.Account.Address);
+
     public async Task<string> ApproveSpend(long index, string address, BigInteger amount)
     {
         var receipt = await User((int)index).Eth.ERC20
@@ -63,6 +65,9 @@ internal class EthereumChain : IChain
     public async Task<string> ExtractToken(long index, string address, bool prefill)
     {
         var web3 = User(index);
+
+        // TODO: prefill.
+
         var receipt = await web3.Eth.ERC20
             .GetContractService(options.Value.TokenAddress)
             .TransferRequestAndWaitForReceiptAsync(new TransferFunction

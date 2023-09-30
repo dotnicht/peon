@@ -4,6 +4,7 @@ namespace Quiiiz.Peon.Persistence;
 
 public interface IChain
 {
+    Task<string> GenerateAddress(long index);
     Task FillGas(string[] addresses, decimal amount);
     Task<string> ExtractGas(long index, string address);
     Task<string> ExtractToken(long index, string address, bool prefill);

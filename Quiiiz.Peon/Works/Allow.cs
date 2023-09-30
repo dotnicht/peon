@@ -14,13 +14,15 @@ internal class Allow : IWork
     private readonly IOptions<Blockchain> blockchain;
     private readonly IOptions<Configuration> options;
     private readonly IRepository<User> repository;
+    private readonly IChain chain;
 
-    public Allow(ILogger<Allow> logger, IOptions<Blockchain> blockchain, IRepository<User> repository, IOptions<Configuration> options)
+    public Allow(ILogger<Allow> logger, IOptions<Blockchain> blockchain, IRepository<User> repository, IOptions<Configuration> options, IChain chain)
     {
         this.logger = logger;
         this.blockchain = blockchain;
         this.repository = repository;
         this.options = options;
+        this.chain = chain;
     }
 
     public async Task Work(CancellationToken cancellationToken)
@@ -29,22 +31,7 @@ internal class Allow : IWork
         {
             if (user.Approved == 0)
             {
-                var web3 = blockchain.Value.CreateUser(user);
-
-                var receipt = await web3.Eth.ERC20
-                    .GetContractService(blockchain.Value.TokenAddress)
-                    .ApproveRequestAndWaitForReceiptAsync(new ApproveFunction
-                    {
-                        Spender = blockchain.Value.SpenderAddress,
-                        Value = options.Value.Amount
-                    }, cancellationToken);
-
-                logger.LogInformation("Approve transaction {Hash} by user {User}.", receipt.TransactionHash, user);
-
-                if (!receipt.Succeeded())
-                {
-                    logger.LogError("Approve transaction failed {Hash}.", receipt.TransactionHash);
-                }
+                var tx = await chain.ApproveSpend(user.Id, blockchain.Value.SpenderAddress, options.Value.Amount);
 
                 var updated = await user.UpdateApproved(repository, blockchain.Value);
 

@@ -39,9 +39,7 @@ public static class Extensions
         foreach (var work in mapping)
         {
             services.AddTransient(work.Value);
-
             var cfg = work.Value.GetNestedType("Configuration");
-
             if (cfg != null)
             {
                 mi.MakeGenericMethod(cfg).Invoke(null, new object[] { services, section.GetSection(work.Key) });

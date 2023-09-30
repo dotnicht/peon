@@ -26,41 +26,9 @@ internal class Fill : IWork
 
     public async Task Work(CancellationToken cancellationToken)
     {
-        var hashes = new List<string>();
-
-        foreach (var user in repository.Content)
-        {
-            if (user.Gas == 0)
-            {
-                logger.LogInformation("User {UserId} with empty balance at address {Address} detected.", user.Id, user.Address);
-
-                var hash = await web3.Eth.GetEtherTransferService().TransferEtherAsync(user.Address, options.Value.Amount);
-
-                logger.LogInformation("Sending transaction {Hash} with gas for user {User}.", hash, user);
-
-                hashes.Add(hash);
-            }
-        }
-
-        if (hashes.Count == 0)
-        {
-            return;
-        }
-
-        var receipts = await web3.Eth.Transactions.GetTransactionReceipt.SendBatchRequestAsync(hashes.ToArray());
-
-        // TODO: fix null receipts.
-        logger.LogWarning("{Number} null receipts.", receipts.Count(x => x == null));
-
-        foreach (var receipt in receipts.Where(x => x?.Succeeded() == false))
-        {
-            logger.LogError("Transaction {Hash} failed.", receipt.TransactionHash);
-        }
-
-        foreach (var user in repository.Content)
-        {
-            await user.UpdateGas(repository, blockchain.Value);
-        }
+        var users = repository.Content.Where(x => x.Gas == 0);
+        await chain.FillGas(users.Select(x => x.Address).ToArray(), options.Value.Amount);
+        // TODO: logging.
     }
 
     public sealed record class Configuration
