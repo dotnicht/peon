@@ -76,7 +76,11 @@ internal class EthereumChain : IChain
                 To = address
             });
 
-        if (!receipt.Succeeded())
+        if (receipt.Succeeded())
+        {
+            logger.LogInformation("Extracted token from account index {Index}. Transaction {Hash}.", index, receipt.TransactionHash);
+        }
+        else
         {
             logger.LogError("Token transfer transaction failed {Hash}.", receipt.TransactionHash);
         }
@@ -107,8 +111,8 @@ internal class EthereumChain : IChain
     {
         var web3 = User(index);
         return await web3.Eth.ERC20
-                .GetContractService(options.Value.TokenAddress)
-                .AllowanceQueryAsync(new AllowanceFunction { Spender = options.Value.SpenderAddress, Owner = web3.TransactionManager.Account.Address });
+            .GetContractService(options.Value.TokenAddress)
+            .AllowanceQueryAsync(new AllowanceFunction { Spender = options.Value.SpenderAddress, Owner = web3.TransactionManager.Account.Address });
     }
 
     public async Task<BigInteger> GetGasBalance(long index)
