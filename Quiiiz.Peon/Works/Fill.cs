@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Numerics;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Nethereum.RPC.Eth.DTOs;
 using Quiiiz.Peon.Configuration;
 using Quiiiz.Peon.Domain;
 using Quiiiz.Peon.Persistence;
@@ -26,7 +26,7 @@ internal class Fill : IWork
 
     public async Task Work(CancellationToken cancellationToken)
     {
-        var users = repository.Content.Where(x => x.Gas == 0);
+        var users = repository.Content.Where(x => x.Gas == BigInteger.Zero);
         await chain.FillGas(users.Select(x => x.Address).ToArray(), options.Value.Amount);
         foreach (var user in users) 
         {
