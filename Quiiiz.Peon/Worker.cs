@@ -25,7 +25,7 @@ public sealed class Worker : IHostedService
     {
         var mapping = serviceProvider.GetRequiredService<IDictionary<string, Type>>();
         var commands = Environment.GetCommandLineArgs();
-        if (commands.Length < 2 || commands.Skip(1).Any(x => mapping.ContainsKey(x)))
+        if (commands.Length < 2 || commands.Skip(1).Any(x => !mapping.ContainsKey(x)))
         {
             logger.LogWarning("Unable to parse command line string. Available commands: {CommandList}.", string.Join(", ", mapping.Keys));
             return;
