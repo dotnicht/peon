@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Nethereum.HdWallet;
 using Quiiiz.Peon.Configuration;
 using Quiiiz.Peon.Domain;
 using Quiiiz.Peon.Persistence;
@@ -33,7 +32,15 @@ internal class Check : IWork
 
             if (existing == null)
             {
-                await repository.Add(new User { Id = i, Address = address, Gas = 0, Token = 0, Approved = 0 });
+                await repository.Add(new User
+                {
+                    Id = i,
+                    Address = address,
+                    Gas = await chain.GetGasBalance(i),
+                    Token = await chain.GetTokenBalance(i),
+                    Approved = await chain.GetAllowance(i, blockchain.Value.SpenderAddress)
+                });
+
                 logger.LogInformation("Address {Address} for user {UserId} generated.", address, i);
             }
             else if (existing.Address != address)
