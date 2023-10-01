@@ -27,8 +27,6 @@ internal class Extract : IWork
     {
         foreach (var user in repository.Content.OrderBy(x => x.Id))
         {
-            var web3 = blockchain.Value.CreateUser(user);
-
             if (options.Value.Token.Extract && user.Token > 0)
             {
                 await chain.ExtractToken(user.Id, options.Value.Token.Address, false);

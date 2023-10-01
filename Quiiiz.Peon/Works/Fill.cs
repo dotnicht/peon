@@ -28,7 +28,12 @@ internal class Fill : IWork
     {
         var users = repository.Content.Where(x => x.Gas == 0);
         await chain.FillGas(users.Select(x => x.Address).ToArray(), options.Value.Amount);
-        // TODO: logging.
+        foreach (var user in users) 
+        {
+            var gas = await chain.GetGasBalance(user.Id);
+            await repository.Update(user with { Gas = gas, Updated = DateTime.UtcNow });
+            logger.LogInformation("User {User} updated with gas {Gas}.", user, gas);
+        }
     }
 
     public sealed record class Configuration
