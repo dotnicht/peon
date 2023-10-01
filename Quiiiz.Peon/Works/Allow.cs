@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Nethereum.Contracts.Standards.ERC20.ContractDefinition;
-using Nethereum.RPC.Eth.DTOs;
 using Quiiiz.Peon.Configuration;
 using Quiiiz.Peon.Domain;
 using Quiiiz.Peon.Persistence;
@@ -31,13 +29,12 @@ internal class Allow : IWork
         {
             if (user.Approved == 0)
             {
-                var tx = await chain.ApproveSpend(user.Id, blockchain.Value.SpenderAddress, options.Value.Amount);
-
-                var updated = await user.UpdateApproved(repository, blockchain.Value);
-
-                if (updated.Approved == 0)
+                await chain.ApproveSpend(user.Id, blockchain.Value.SpenderAddress, options.Value.Amount);
+                if (options.Value.Refresh)
                 {
-                    logger.LogError("Zero allowance detected for user {User}.", updated);
+                    var approved = await chain.GetAllowance(user.Id, blockchain.Value.SpenderAddress);
+                    await repository.Update(user with { Approved = approved, Updated = DateTime.UtcNow });
+                    logger.LogInformation("User {User} updated with approved {Approved}.", user, approved);
                 }
             }
         }
@@ -46,5 +43,6 @@ internal class Allow : IWork
     public sealed record class Configuration
     {
         public long Amount { get; init; }
+        public required bool Refresh { get; init; }
     }
 }
