@@ -1,6 +1,6 @@
-﻿using Quiiiz.Peon.Domain;
+﻿using Peon.Domain;
 
-namespace Quiiiz.Peon.Persistence;
+namespace Peon.Persistence;
 
 public interface IRepository<TItem> where TItem : class, IEntity, IAudit
 {

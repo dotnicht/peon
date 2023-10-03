@@ -1,4 +1,4 @@
-﻿namespace Quiiiz.Peon.Configuration;
+﻿namespace Peon.Configuration;
 
 public sealed record class Database
 {

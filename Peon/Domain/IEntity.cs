@@ -1,4 +1,4 @@
-﻿namespace Quiiiz.Peon.Domain;
+﻿namespace Peon.Domain;
 
 public interface IEntity
 {

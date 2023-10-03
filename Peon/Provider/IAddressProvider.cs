@@ -1,4 +1,4 @@
-﻿namespace Quiiiz.Peon.Provider;
+﻿namespace Peon.Provider;
 
 public interface IAddressProvider
 {

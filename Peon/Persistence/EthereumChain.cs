@@ -5,9 +5,9 @@ using Nethereum.Contracts.Standards.ERC20.ContractDefinition;
 using Nethereum.HdWallet;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Web3;
-using Quiiiz.Peon.Configuration;
+using Peon.Configuration;
 
-namespace Quiiiz.Peon.Persistence;
+namespace Peon.Persistence;
 
 internal class EthereumChain : IChain
 {

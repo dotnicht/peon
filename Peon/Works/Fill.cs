@@ -1,11 +1,11 @@
 ﻿using System.Numerics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Quiiiz.Peon.Configuration;
-using Quiiiz.Peon.Domain;
-using Quiiiz.Peon.Persistence;
+using Peon.Configuration;
+using Peon.Domain;
+using Peon.Persistence;
 
-namespace Quiiiz.Peon.Works;
+namespace Peon.Works;
 
 internal class Fill : IWork
 {

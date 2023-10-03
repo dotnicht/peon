@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Quiiiz.Peon.Persistence;
+namespace Peon.Persistence;
 
 public interface IChain
 {

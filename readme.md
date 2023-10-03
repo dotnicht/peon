@@ -1,7 +1,7 @@
 
 # Description 
 
-Quiiiz.Peon is a hosted service console dotnet application. 
+Peon is a hosted service console dotnet application. 
 It's configured using "appsettings.json" file. 
 It's capable of performing 5 different types of jobs called Works. 
 It's execution workflow is determined by command line arguments. 
@@ -12,15 +12,15 @@ Most typical run scenarios are predetermined in "launchSettings.json" (useful fo
 For example, we want to create a workflow that will generate addresses for the users and prefill them with gas. 
 On Windows machine we will run:
 
-**Quiiiz.Peon.exe check fill**
+**Peon.exe check fill**
 
-where **Quiiiz.Peon.exe**" is the executable, "**check**" is the name of the work responsible for generating address, while "**fill**" is the work filling the gas.
+where **Peon.exe**" is the executable, "**check**" is the name of the work responsible for generating address, while "**fill**" is the work filling the gas.
 
 We can stack as many tasks as need, chaining them into long running workflows. 
 
 For example running 
 
-**Quiiiz.Peon.exe check sync fill sync allow sync extract sync**
+**Peon.exe check sync fill sync allow sync extract sync**
 
 will result in a workflow that:
     1. generates addresses, 

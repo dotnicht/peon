@@ -3,9 +3,9 @@ using Microsoft.Extensions.Options;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
-using Quiiiz.Peon.Domain;
+using Peon.Domain;
 
-namespace Quiiiz.Peon.Persistence;
+namespace Peon.Persistence;
 
 internal sealed class MongoRepository<TItem> : IRepository<TItem> where TItem : class, IEntity, IAudit
 {

@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Quiiiz.Peon.Domain;
+namespace Peon.Domain;
 
 public record User : IEntity, IAudit
 {

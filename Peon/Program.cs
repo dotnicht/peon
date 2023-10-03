@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Quiiiz.Peon;
-using Quiiiz.Peon.Configuration;
-using Quiiiz.Peon.Domain;
-using Quiiiz.Peon.Persistence;
+using Peon;
+using Peon.Configuration;
+using Peon.Domain;
+using Peon.Persistence;
 
 var builder = Host.CreateApplicationBuilder();
 

@@ -1,4 +1,4 @@
-﻿namespace Quiiiz.Peon.Works;
+﻿namespace Peon.Works;
 
 public interface IWork
 {

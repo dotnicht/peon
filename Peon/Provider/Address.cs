@@ -1,7 +1,7 @@
-﻿using Quiiiz.Peon.Domain;
-using Quiiiz.Peon.Persistence;
+﻿using Peon.Domain;
+using Peon.Persistence;
 
-namespace Quiiiz.Peon.Provider;
+namespace Peon.Provider;
 
 internal class Address : IAddressProvider
 {

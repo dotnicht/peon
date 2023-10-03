@@ -2,13 +2,13 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Quiiiz.Peon.Configuration;
-using Quiiiz.Peon.Domain;
-using Quiiiz.Peon.Persistence;
-using Quiiiz.Peon.Provider;
-using Quiiiz.Peon.Works;
+using Peon.Configuration;
+using Peon.Domain;
+using Peon.Persistence;
+using Peon.Provider;
+using Peon.Works;
 
-namespace Quiiiz.Peon;
+namespace Peon;
 
 public static class Extensions
 {

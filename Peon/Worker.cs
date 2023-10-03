@@ -4,9 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Quiiiz.Peon.Works;
+using Peon.Works;
 
-namespace Quiiiz.Peon;
+namespace Peon;
 
 public sealed class Worker : IHostedService
 {
