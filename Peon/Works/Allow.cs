@@ -6,23 +6,14 @@ using Peon.Persistence;
 
 namespace Peon.Works;
 
-internal class Allow : IWork
+internal class Allow(
+    ILogger<Allow> logger,
+    IOptions<Blockchain> blockchain,
+    IRepository<User> repository,
+    IOptions<Allow.Configuration> options,
+    IChain chain) 
+        : IWork, IConfig<Allow.Configuration>
 {
-    private readonly ILogger<Allow> logger;
-    private readonly IOptions<Blockchain> blockchain;
-    private readonly IOptions<Configuration> options;
-    private readonly IRepository<User> repository;
-    private readonly IChain chain;
-
-    public Allow(ILogger<Allow> logger, IOptions<Blockchain> blockchain, IRepository<User> repository, IOptions<Configuration> options, IChain chain)
-    {
-        this.logger = logger;
-        this.blockchain = blockchain;
-        this.repository = repository;
-        this.options = options;
-        this.chain = chain;
-    }
-
     public async Task Work(CancellationToken cancellationToken)
     {
         foreach (var user in repository.Content)

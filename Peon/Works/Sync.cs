@@ -6,7 +6,7 @@ using Peon.Persistence;
 
 namespace Peon.Works;
 
-internal class Sync : IWork
+internal class Sync : IWork, IConfig<Sync.Configuration>
 {
     private readonly IRepository<User> repository;
     private readonly IOptions<Blockchain> blockchain;

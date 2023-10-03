@@ -1,28 +1,17 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Peon.Configuration;
 using Peon.Domain;
 using Peon.Persistence;
 
 namespace Peon.Works;
 
-internal class Extract : IWork
+internal class Extract(
+    IRepository<User> repository,
+    ILogger<Extract> logger,
+    IOptions<Extract.Configuration> options,
+    IChain chain) 
+        : IWork, IConfig<Extract.Configuration>
 {
-    private readonly IRepository<User> repository;
-    private readonly ILogger<Extract> logger;
-    private readonly IOptions<Blockchain> blockchain;
-    private readonly IOptions<Configuration> options;
-    private readonly IChain chain;
-
-    public Extract(IRepository<User> repository, ILogger<Extract> logger, IOptions<Blockchain> blockchain, IOptions<Configuration> options, IChain chain)
-    {
-        this.repository = repository;
-        this.logger = logger;
-        this.blockchain = blockchain;
-        this.options = options;
-        this.chain = chain;
-    }
-
     public async Task Work(CancellationToken cancellationToken)
     {
         foreach (var user in repository.Content.OrderBy(x => x.Id))

@@ -9,17 +9,8 @@ using Peon.Configuration;
 
 namespace Peon.Persistence;
 
-internal class EthereumChain : IChain
+internal class EthereumChain(ILogger<EthereumChain> logger, IOptions<Blockchain> options) : IChain
 {
-    private readonly ILogger<EthereumChain> logger;
-    private readonly IOptions<Blockchain> options;
-
-    public EthereumChain(ILogger<EthereumChain> logger, IOptions<Blockchain> options)
-    {
-        this.logger = logger;
-        this.options = options;
-    }
-
     public async Task<string> GenerateAddress(long index) => await Task.FromResult(User(index).TransactionManager.Account.Address);
 
     public async Task<string> ApproveSpend(long index, string address, BigInteger amount)
@@ -99,7 +90,7 @@ internal class EthereumChain : IChain
 
         if (hashes.Count != 0)
         {
-            var receipts = await web3.Eth.Transactions.GetTransactionReceipt.SendBatchRequestAsync(hashes.ToArray());
+            var receipts = await web3.Eth.Transactions.GetTransactionReceipt.SendBatchRequestAsync([.. hashes]);
             foreach (var receipt in receipts.Where(x => !x.Succeeded()))
             {
                 logger.LogError("Transaction {Hash} failed.", receipt.TransactionHash);

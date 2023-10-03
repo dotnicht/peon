@@ -7,10 +7,9 @@ using Peon.Persistence;
 
 namespace Peon.Works;
 
-internal class Fill : IWork
+internal class Fill : IWork, IConfig<Fill.Configuration>
 {
     private readonly ILogger<Fill> logger;
-    private readonly IOptions<Blockchain> blockchain;
     private readonly IOptions<Configuration> options;
     private readonly IRepository<User> repository;
     private readonly IChain chain;
@@ -18,7 +17,6 @@ internal class Fill : IWork
     public Fill(ILogger<Fill> logger, IOptions<Blockchain> blockchain, IRepository<User> repository, IOptions<Configuration> options, IChain chain)
     {
         this.logger = logger;
-        this.blockchain = blockchain;
         this.repository = repository;
         this.options = options;
         this.chain = chain;
