@@ -7,25 +7,13 @@ using Peon.Persistence;
 
 namespace Peon.Works;
 
-internal class Fill : IWork, IConfig<Fill.Configuration>
+internal class Fill(ILogger<Fill> logger, IRepository<User> repository, IOptions<Fill.Configuration> options, IChain chain) 
+    : IWork, IConfig<Fill.Configuration>
 {
-    private readonly ILogger<Fill> logger;
-    private readonly IOptions<Configuration> options;
-    private readonly IRepository<User> repository;
-    private readonly IChain chain;
-
-    public Fill(ILogger<Fill> logger, IOptions<Blockchain> blockchain, IRepository<User> repository, IOptions<Configuration> options, IChain chain)
-    {
-        this.logger = logger;
-        this.repository = repository;
-        this.options = options;
-        this.chain = chain;
-    }
-
     public async Task Work(CancellationToken cancellationToken)
     {
         var users = repository.Content.Where(x => x.Gas == BigInteger.Zero);
-        await chain.FillGas(users.Select(x => x.Address).ToArray(), options.Value.Amount);
+        await chain.FillGas([.. users.Select(x => x.Address)], options.Value.Amount);
         foreach (var user in users) 
         {
             var gas = await chain.GetGasBalance(user.Id);

@@ -8,19 +8,9 @@ using Peon.Works;
 
 namespace Peon;
 
-public sealed class Worker : IHostedService
+public sealed class Worker(IServiceProvider serviceProvider, ILogger<Worker> logger, IOptions<Configuration.Works> options) 
+    : IHostedService
 {
-    private readonly IServiceProvider serviceProvider;
-    private readonly ILogger<Worker> logger;
-    private readonly IOptions<Configuration.Works> options;
-
-    public Worker(IServiceProvider serviceProvider, ILogger<Worker> logger, IOptions<Configuration.Works> options)
-    {
-        this.serviceProvider = serviceProvider;
-        this.logger = logger;
-        this.options = options;
-    }
-
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         var mapping = serviceProvider.GetRequiredService<IDictionary<string, Type>>();

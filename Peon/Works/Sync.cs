@@ -6,23 +6,9 @@ using Peon.Persistence;
 
 namespace Peon.Works;
 
-internal class Sync : IWork, IConfig<Sync.Configuration>
+internal class Sync(IRepository<User> repository, IOptions<Blockchain> blockchain, ILogger<Sync> logger, IOptions<Sync.Configuration> options, IChain chain) 
+    : IWork, IConfig<Sync.Configuration>
 {
-    private readonly IRepository<User> repository;
-    private readonly IOptions<Blockchain> blockchain;
-    private readonly IOptions<Configuration> options;
-    private readonly ILogger<Sync> logger;
-    private readonly IChain chain;
-
-    public Sync(IRepository<User> repository, IOptions<Blockchain> blockchain, ILogger<Sync> logger, IOptions<Configuration> options, IChain chain)
-    {
-        this.repository = repository;
-        this.blockchain = blockchain;
-        this.logger = logger;
-        this.options = options;
-        this.chain = chain;
-    }
-
     public async Task Work(CancellationToken cancellationToken)
     {
         foreach (var user in repository.Content)
