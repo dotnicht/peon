@@ -16,9 +16,7 @@ internal sealed class MongoRepository<TItem> : IRepository<TItem> where TItem : 
     public MongoRepository(IOptions<Configuration.Database> options)
     {
         BsonSerializer.TryRegisterSerializer(new BigIntegerSerializer());
-        collection = new MongoClient(options.Value.Connection)
-            .GetDatabase(options.Value.Name)
-            .GetCollection<TItem>(typeof(TItem).Name.ToLower());
+        collection = new MongoClient(options.Value.Connection).GetDatabase(options.Value.Name).GetCollection<TItem>(typeof(TItem).Name.ToLower());
     }
 
     public async Task Add(TItem item) => await collection.InsertOneAsync(item);

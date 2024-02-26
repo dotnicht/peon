@@ -45,7 +45,7 @@ internal class Extract(
         public required Asset Token { get; init; }
         public required Asset Gas { get; init; }
 
-        public sealed record Asset
+        public sealed record class Asset
         {
             public required bool Extract { get; init; }
             public required string Address { get; init; }

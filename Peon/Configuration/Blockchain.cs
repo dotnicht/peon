@@ -10,7 +10,7 @@ public sealed record class Blockchain
     public required Credentials Users { get; init; }
     public required Credentials Master { get; init; }
 
-    public class Credentials
+    public sealed record class Credentials
     {
         public required string Seed { get; init; }
         public required string Password { get; init; }

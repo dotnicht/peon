@@ -15,6 +15,7 @@ public sealed class Worker(IServiceProvider serviceProvider, ILogger<Worker> log
     {
         var mapping = serviceProvider.GetRequiredService<IDictionary<string, Type>>();
         var commands = Environment.GetCommandLineArgs();
+
         if (commands.Length < 2 || commands.Skip(1).Any(x => !mapping.ContainsKey(x)))
         {
             logger.LogWarning("Unable to parse command line string. Available commands: {CommandList}.", string.Join(", ", mapping.Keys));
@@ -24,6 +25,7 @@ public sealed class Worker(IServiceProvider serviceProvider, ILogger<Worker> log
         do
         {
             var timer = Stopwatch.StartNew();
+
             foreach (var cmd in commands)
             {
                 if (cmd == Assembly.GetExecutingAssembly().Location)
@@ -54,6 +56,7 @@ public sealed class Worker(IServiceProvider serviceProvider, ILogger<Worker> log
 
             logger.LogInformation("All works execution finished in {Elapsed}. Timeout {Timeout}.", timer.Elapsed, options.Value.Timeout);
             await Task.Delay(options.Value.Timeout, cancellationToken);
+            
         } while (options.Value.Loop && !cancellationToken.IsCancellationRequested);
     }
 

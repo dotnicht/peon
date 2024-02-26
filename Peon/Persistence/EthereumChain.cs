@@ -83,6 +83,7 @@ internal class EthereumChain(ILogger<EthereumChain> logger, IOptions<Blockchain>
     {
         var hashes = new List<string>();
         var web3 = Master();
+
         foreach (var address in addresses)
         {
             hashes.Add(await web3.Eth.GetEtherTransferService().TransferEtherAsync(address, amount));
@@ -91,6 +92,7 @@ internal class EthereumChain(ILogger<EthereumChain> logger, IOptions<Blockchain>
         if (hashes.Count != 0)
         {
             var receipts = await web3.Eth.Transactions.GetTransactionReceipt.SendBatchRequestAsync([.. hashes]);
+
             foreach (var receipt in receipts.Where(x => !x.Succeeded()))
             {
                 logger.LogError("Transaction {Hash} failed.", receipt.TransactionHash);
@@ -101,6 +103,7 @@ internal class EthereumChain(ILogger<EthereumChain> logger, IOptions<Blockchain>
     public async Task<BigInteger> GetAllowance(long index, string address)
     {
         var web3 = User(index);
+
         return await web3.Eth.ERC20
             .GetContractService(options.Value.TokenAddress)
             .AllowanceQueryAsync(new AllowanceFunction { Spender = options.Value.SpenderAddress, Owner = web3.TransactionManager.Account.Address });
@@ -109,27 +112,26 @@ internal class EthereumChain(ILogger<EthereumChain> logger, IOptions<Blockchain>
     public async Task<BigInteger> GetGasBalance(long index)
     {
         var web3 = User(index);
+
         return await web3.Eth.GetBalance.SendRequestAsync(web3.TransactionManager.Account.Address);
     }
 
     public Task<BigInteger> GetTokenBalance(long index)
     {
         var web3 = User(index);
+
         return web3.Eth.ERC20
             .GetContractService(options.Value.TokenAddress)
             .BalanceOfQueryAsync(new BalanceOfFunction { Owner = web3.TransactionManager.Account.Address });
     }
 
-    private Web3 User(long index)
-        => Create((int)index, options.Value.Users);
+    private Web3 User(long index) => Create((int)index, options.Value.Users);
 
-    private Web3 Master()
-        => Create(options.Value.MasterIndex, options.Value.Master);
+    private Web3 Master() => Create(options.Value.MasterIndex, options.Value.Master);
 
     private Web3 Create(int index, Blockchain.Credentials credentials)
     {
-        var web3 = new Web3(new Wallet(credentials.Seed, credentials.Password)
-            .GetAccount(index, options.Value.ChainId), options.Value.Node.ToString());
+        var web3 = new Web3(new Wallet(credentials.Seed, credentials.Password).GetAccount(index, options.Value.ChainId), options.Value.Node.ToString());
         web3.Eth.TransactionManager.UseLegacyAsDefault = true;
         return web3;
     }
