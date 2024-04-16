@@ -21,10 +21,12 @@ internal class Allow(
             if (user.Approved == 0)
             {
                 await chain.ApproveSpend(user.Id, blockchain.Value.SpenderAddress, options.Value.Amount);
+
                 if (options.Value.Refresh)
                 {
                     var approved = await chain.GetAllowance(user.Id, blockchain.Value.SpenderAddress);
                     await repository.Update(user with { Approved = approved, Updated = DateTime.UtcNow });
+                    
                     logger.LogInformation("User {User} updated with approved {Approved}.", user, approved);
                 }
             }

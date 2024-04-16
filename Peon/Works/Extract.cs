@@ -19,10 +19,12 @@ internal class Extract(
             if (options.Value.Token.Extract && user.Token > 0)
             {
                 await chain.ExtractToken(user.Id, options.Value.Token.Address, false);
+
                 if (options.Value.Token.Refresh)
                 {
                     var token = await chain.GetGasBalance(user.Id);
                     await repository.Update(user with { Token = token, Updated = DateTime.UtcNow });
+
                     logger.LogInformation("User {User} updated with token {Token}.", user, token);
                 }
             }
@@ -30,10 +32,12 @@ internal class Extract(
             if (options.Value.Gas.Extract && user.Gas > 0)
             {
                 await chain.ExtractGas(user.Id, options.Value.Gas.Address);
+
                 if (options.Value.Gas.Refresh)
                 {
                     var gas = await chain.GetGasBalance(user.Id);
                     await repository.Update(user with { Gas = gas, Updated = DateTime.UtcNow });
+
                     logger.LogInformation("User {User} updated with gas {Gas}.", user, gas);
                 }
             }

@@ -9,7 +9,7 @@ using Peon.Configuration;
 
 namespace Peon.Persistence;
 
-internal class EthereumChain(ILogger<EthereumChain> logger, IOptions<Blockchain> options) : IChain
+internal sealed class EthereumChain(ILogger<EthereumChain> logger, IOptions<Blockchain> options) : IChain
 {
     public async Task<string> GenerateAddress(long index) => await Task.FromResult(User(index).TransactionManager.Account.Address);
 
