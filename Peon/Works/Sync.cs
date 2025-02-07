@@ -14,7 +14,7 @@ internal class Sync(IRepository<User> repository, IOptions<Blockchain> blockchai
         foreach (var user in repository.Content)
         {
             if (options.Value.Gas)
-            {
+            {                
                 var gas = await chain.GetGasBalance(user.Id);
                 
                 if (gas != user.Gas)

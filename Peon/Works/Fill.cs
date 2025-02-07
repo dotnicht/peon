@@ -1,7 +1,6 @@
 ﻿using System.Numerics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Peon.Configuration;
 using Peon.Domain;
 using Peon.Persistence;
 
