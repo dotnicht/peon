@@ -28,11 +28,8 @@ public sealed class Worker(IServiceProvider serviceProvider, ILogger<Worker> log
 
             foreach (var cmd in commands)
             {
-                if (cmd == Assembly.GetExecutingAssembly().Location)
-                {
-                    continue;
-                }
-
+                if (cmd == Assembly.GetExecutingAssembly().Location) continue;
+                
                 if (serviceProvider.GetRequiredService(mapping[cmd]) is IWork work)
                 {
                     using var scope = serviceProvider.CreateScope();
@@ -46,10 +43,7 @@ public sealed class Worker(IServiceProvider serviceProvider, ILogger<Worker> log
                     catch (Exception ex)
                     {
                         logger.LogError(ex, "An error occurred while executing {WorkType} at {Elapsed}.", mapping[cmd], sw.Elapsed);
-                        if (options.Value.Exceptions)
-                        {
-                            throw;
-                        }
+                        if (options.Value.Exceptions) throw;
                     }
                 }
             }

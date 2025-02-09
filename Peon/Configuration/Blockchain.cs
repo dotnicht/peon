@@ -16,3 +16,4 @@ public sealed record class Blockchain
         public required string Password { get; init; }
     }
 }
+
